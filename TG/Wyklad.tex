@@ -1,0 +1,337 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+
+
+
+
+\title{Teoria Grafów}
+\author{Wojciech Typer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+    {\LARGE \textbf{Wprowadzenie do grafów prostych}}
+\end{center}
+
+\vspace{2\baselineskip}
+
+\textbf{Literatura:}
+\begin{itemize}
+    \item R.J. Wilson, \textit{Wprowadzenie do teorii grafów}
+    \item D.B. West, \textit{Introduction to Graph Theory}
+\end{itemize}
+
+\vspace{1\baselineskip}
+
+\textbf{Definicja:}\\
+Grafem prostym $G$ nazywamy parę zbiorów rozłącznych $(V, E)$ takich, że $E \subseteq V^{(2)}$, gdzie $V^{(2)}$ to zbiór wszystkich 2-elementowych 
+podzbiorów zbioru $V$. Elementy zbioru $V$ nazywamy \textbf{wierzchołkami}, a elementy zbioru $E$ -- \textbf{krawędziami} grafu $G$. Zbiór $V$ nazywamy zbiorem wierzchołków grafu $G$, a zbiór $E$ -- zbiorem krawędzi grafu $G$.
+
+\vspace{0.5\baselineskip}
+\textbf{Oznaczenia:}
+\begin{itemize}
+    \item $V$ -- zbiór wierzchołków
+    \item $E$ -- zbiór krawędzi
+\end{itemize}
+
+\noindent
+Jeżeli dwie krawędzie mają punkt wspólny, to mówimy, że są to \textbf{krawędzie incydentne}.
+
+\vspace{2\baselineskip}
+\textbf{Przykład grafu prostego:}
+
+Załóżmy, że $V = \{ a, b, c, d, e \}$, a $E = \{ \{a, b\}, \{a, c\}, \{b, c\}, \{c, d\}, \{d, e\} \}$.\\
+Poniżej znajduje się wizualizacja tego grafu:
+
+\begin{center}
+\begin{tikzpicture}[scale=1.2, every node/.style={circle, draw, fill=white, minimum size=8mm, inner sep=0pt}]
+    % Wierzchołki
+    \node (a) at (0,1.5) {$a$};
+    \node (b) at (-1,0) {$b$};
+    \node (c) at (1,0) {$c$};
+    \node (d) at (2,-1) {$d$};
+    \node (e) at (3,0) {$e$};
+    % Krawędzie
+    \draw (a) -- (b);
+    \draw (a) -- (c);
+    \draw (b) -- (c);
+    \draw (c) -- (d);
+    \draw (d) -- (e);
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+\begin{center}
+\begin{tikzpicture}[scale=1.3, every node/.style={circle, draw, fill=white, minimum size=8mm, inner sep=0pt}]
+    % Wierzchołki
+    \node (a) at (0,1.5) {$a$};
+    \node (b) at (-1,0) {$b$};
+    \node (c) at (1,0) {$c$};
+    % Krawędzie
+    \draw (a) edge[loop above] (a); % pętla przy a
+    \draw (b) -- (a);
+    \draw (c) -- (a);
+    \draw (b) to[bend left=25] (c); % pierwsza krawędź b-c
+    \draw (b) to[bend right=25] (c); % druga krawędź b-c (multikrawędź)
+\end{tikzpicture}
+\end{center}
+Powyższy graf jest multigrafem, zawierający multi krawędź między wierzchołkami $b$ i $c$ i pętlę przy wierzchołku $a$. \\
+\textbf{Definicja:}\\
+Grafem ogólnym G nazywamy trójkę uporządkowaną $(V, E, \phi)$, gdzie $V$ i $E$ są zbiorami rozłącznymi, a $\phi$ jest funkcją przyporządkowującą każdej krawędzi z $E$ jeden lub dwa (niekoniecznie różne) wierzchołki z $V$. Funkcję $\phi$ nazywamy \textbf{funkcją incydencji}. \\
+\textbf{Przykład}
+$G = (V, E, \phi)$ \\
+$V = {1, 2, 3}$ \\
+$E = {a, b, c, d}$ \\
+$\phi(a) = \{1, 2\}$ \\
+$\phi(b) = \{1, 2\}$ \\
+$\phi(c) = \{2, 3\}$ \\
+$\phi(d) = \{3\}$ \\ %pętla
+\begin{center}
+\begin{tikzpicture}[scale=1.5, every node/.style={circle, draw, fill=white, minimum size=8mm, inner sep=0pt}]
+    % Wierzchołki
+    \node (1) at (0,0) {1};
+    \node (2) at (2,0) {2};
+    \node (3) at (1,1.5) {3};
+
+    % Krawędzie
+    \draw[thick] (1) to[bend left=25] node[midway, below] {$a$} (2);   % a: 1-2
+    \draw[thick] (1) to[bend right=25] node[midway, below] {$b$} (2);  % b: 1-2 (druga krawędź)
+    \draw[thick] (2) -- node[midway, right] {$c$} (3);                 % c: 2-3
+    \draw[thick] (3) edge[loop above, looseness=20] node[right] {$d$} (3); % d: pętla na 3
+\end{tikzpicture}
+\end{center}
+\textbf{Definicja:}\\
+Niech $G = (V, E, j)$ będzie grafem ogólnym, $v \in V$.\\
+\textbf{Stopniem} wierzchołka $v$ nazywamy liczbę:
+\[
+\deg(v) = 2\, \left| \left\{ e \in E_{1} : v \in j(e) \right\} \right| + \left| \left\{ e \in E_{2} : v \in j(e) \right\} \right|
+\]
+gdzie:
+\begin{itemize}
+    \item $E_{1}$ --- zbiór pętli,
+    \item $E_{2}$ --- zbiór krawędzi niebędących pętlami.
+\end{itemize}
+\newpage
+\textbf{Lemat Eulera o uściskach dłoni}\\
+Niech $G = (V, E, j)$ będzie grafem ogólnym.
+
+Wówczas zachodzi:
+\[
+\sum_{v \in V} \deg(v)
+= \sum_{v \in V} \left( 2 \cdot \sum_{e \in E_1} [v \in j(e)] + \sum_{e \in E_2} [v \in j(e)] \right)
+\]
+gdzie:
+\begin{itemize}
+    \item $E_1$ --- zbiór pętli,
+    \item $E_2$ --- zbiór krawędzi nie będących pętlami,
+\end{itemize}
+
+\noindent
+Ponieważ każda pętla jest incydentna tylko z jednym wierzchołkiem, lecz do stopnia liczymy ją podwójnie, oraz każda krawędź nie będąca pętlą jest incydentna z dwoma (różnymi) wierzchołkami, mamy:
+\[
+\sum_{v \in V} \deg(v)
+= 2|E_1| + 2|E_2| = 2(|E_1| + |E_2|) = 2|E|
+\]
+
+\noindent
+Zatem suma stopni wszystkich wierzchołków w grafie ogólnym równa się dwukrotności liczby krawędzi:
+\[
+\boxed{
+\sum_{v \in V} \deg(v) = 2|E|
+}
+\]
+\textbf{Definicja:}\\
+Grafy $G_{1} = (V_{1}, E_{1})$ oraz $G_{2} = (V_{2}, E_{2})$ są \textbf{izomorficzne}, jeśli istnieje bijekcja
+\[
+\varphi: V_{1} \to V_{2}
+\]
+taka, że dla każdych $v, w \in V_{1}$ zachodzi:
+\[
+\{v, w\} \in E_{1} \iff \{\varphi(v), \varphi(w)\} \in E_{2}.
+\]
+\newline
+\textbf{Definicja:}\\
+Graf $G = (V, E)$ nazywamy \textbf{dwudzielnym}, jeżeli istnieją rozłączne, niepuste zbiory $A, B \subseteq V$ takie, że:
+\begin{itemize}
+    \item $A \cap B = \emptyset$, \quad $A \neq \emptyset$, \quad $B \neq \emptyset$,
+    \item $A \cup B = V$,
+    \item każda krawędź $e = \{v, w\} \in E$ spełnia: $v \in A$ oraz $w \in B$ (lub odwrotnie).
+\end{itemize}
+
+\vspace{1em}
+
+\textbf{Definicja:}\\
+Niech $G = (V, E)$ będzie grafem prostym. \textbf{Trójkątem} nazywamy trójkę parami różnych wierzchołków $v, w, z \in V$, takich że:
+\[
+\{v, w\} \in E, \quad \{w, z\} \in E, \quad \{v, z\} \in E
+\]
+
+\vspace{1em}
+\textbf{Przykład:}\\
+Poniżej znajduje się graf będący trójkątem:
+
+\begin{center}
+\begin{tikzpicture}[scale=1.2, every node/.style={circle, draw, fill=white, minimum size=8mm, inner sep=0pt}]
+    \node (v) at (0,0) {$v$};
+    \node (w) at (2,0) {$w$};
+    \node (z) at (1,1.73) {$z$};
+    \draw (v) -- (w) -- (z) -- (v);
+\end{tikzpicture}
+\end{center}
+\newpage
+\textbf{Przykłady grafów:}\\
+\begin{itemize}
+    \item Graf pełny
+
+    \begin{center}
+    \begin{tikzpicture}[scale=1, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        \node (a) at (0,1) {1};
+        \node (b) at (1,2) {2};
+        \node (c) at (2,1) {3};
+        \node (d) at (1,0) {4};
+        \foreach \i/\j in {a/b, a/c, a/d, b/c, b/d, c/d}
+            \draw (\i) -- (\j);
+    \end{tikzpicture}
+    \end{center}
+
+    \item Graf liniowy
+
+    \begin{center}
+    \begin{tikzpicture}[scale=1, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        \node (a) at (0,0) {1};
+        \node (b) at (1,0) {2};
+        \node (c) at (2,0) {3};
+        \node (d) at (3,0) {4};
+        \draw (a) -- (b) -- (c) -- (d);
+    \end{tikzpicture}
+    \end{center}
+
+    \item Cykl
+
+    \begin{center}
+    \begin{tikzpicture}[scale=1, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        \node (a) at (0,1) {1};
+        \node (b) at (1,2) {2};
+        \node (c) at (2,1) {3};
+        \node (d) at (1,0) {4};
+        \draw (a) -- (b) -- (c) -- (d) -- (a);
+    \end{tikzpicture}
+    \end{center}
+
+    \item Graf pełny dwudzielny
+
+    \begin{center}
+    \begin{tikzpicture}[scale=1, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        \node (a) at (0,1) {$A_1$};
+        \node (b) at (0,-1) {$A_2$};
+        \node (c) at (2,0.7) {$B_1$};
+        \node (d) at (2,-0.7) {$B_2$};
+        \foreach \i in {a,b}
+            \foreach \j in {c,d}
+                \draw (\i) -- (\j);
+    \end{tikzpicture}
+    \end{center}
+
+    \item Gwiazda
+    \begin{center}
+    \begin{tikzpicture}[scale=1.1, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        \node (c) at (0,0) {$v_0$};
+        \node (a) at (1.5,1) {$v_1$};
+        \node (b) at (1.5,0) {$v_2$};
+        \node (d) at (1.5,-1) {$v_3$};
+        \draw (c) -- (a);
+        \draw (c) -- (b);
+        \draw (c) -- (d);
+    \end{tikzpicture}
+    \end{center}
+
+    \textbf{Graf koło:}
+
+    \begin{center}
+    \begin{tikzpicture}[scale=1.2, every node/.style={circle, draw, fill=white, minimum size=7mm, inner sep=0pt}]
+        % Wierzchołki na okręgu
+        \foreach \i/\name in {1/a,2/b,3/c,4/d,5/e}
+            \node (\name) at ({90+72*(\i-1)}:1.5) {$v_{\i}$};
+        % Wierzchołek centralny
+        \node (o) at (0,0) {$v_0$};
+        % Krawędzie cyklu
+        \foreach \i/\j in {a/b, b/c, c/d, d/e, e/a}
+            \draw (\i) -- (\j);
+        % Krawędzie do środka
+        \foreach \name in {a,b,c,d,e}
+            \draw (o) -- (\name);
+    \end{tikzpicture}
+    \end{center}
+\end{itemize}
+\newpage
+\textbf{Definicja (dopełnienie grafu):}\\
+Dopełnieniem grafu $G = (V, E)$ nazywamy graf $\overline{G} = (V, \overline{E})$, gdzie $\overline{E}$ jest zbiorem wszystkich krawędzi, które nie należą do $E$, tzn.\
+\[
+\overline{E} = \{\{v, w\} : v, w \in V, v \neq w, \{v, w\} \notin E\}
+\]
+
+\vspace{1em}
+
+\textbf{Definicja (suma dwóch grafów):}\\
+Sumą grafów $G_1 = (V_1, E_1)$ oraz $G_2 = (V_2, E_2)$ (dla $V_1 \cap V_2 = \emptyset$) nazywamy graf $G = (V_1 \cup V_2, E_1 \cup E_2)$.
+\newline
+\textbf{Lemat 1}\\
+Niech $G = (V, E)$ będzie grafem prostym bez trójkątów. Wtedy dla każdej krawędzi $\{v, w\} \in E$ zachodzi:
+\begin{center}
+    \[
+    \deg(v) + \deg(w) \leq n = |V|
+    \]
+\end{center}
+
+\vspace{1em}
+
+\textbf{Lemat 2}\\
+Niech $G = (V, E)$. Wówczas:
+\begin{center}
+    \[
+    \sum_{\{v, w\} \in E} \left( \deg(v) + \deg(w) \right) = \sum_{v \in V} \left(\deg(v)\right)^2
+    \]
+\end{center}
+
+\textbf{Twierdzenie (Mantela):}\\
+Niech $G = (V, E)$ będzie grafem prostym o $n \geq 3$ wierzchołkach, w którym nie ma trójkąta (czyli graf nie zawiera cyklu długości 3). Wówczas:
+\[
+|E| \leq \left\lfloor \frac{n^2}{4} \right\rfloor.
+\]
+Osiągnięcie tej liczby krawędzi jest możliwe tylko wtedy, gdy $G$ jest grafem pełnym dwudzielnym z częściami o rozmiarach $\left\lfloor \frac{n}{2} \right\rfloor$ i $\left\lceil \frac{n}{2} \right\rceil$.
+
+\vspace{1em}
+
+\textbf{Dowód:}\\
+Załóżmy, że $G = (V, E)$ jest grafem prostym bez trójkąta, $|V| = n$. Niech $A$ i $B$ będą dwoma rozłącznymi podzbiorami $V$ takimi, że $A \cup B = V$ i $|A| = \left\lfloor \frac{n}{2} \right\rfloor$, $|B| = \left\lceil \frac{n}{2} \right\rceil$. 
+
+Każda krawędź w grafie dwudzielnym $K_{|A|, |B|}$ łączy wierzchołek z $A$ z wierzchołkiem z $B$, więc liczba krawędzi wynosi $|A| \cdot |B| = \left\lfloor \frac{n}{2} \right\rfloor \cdot \left\lceil \frac{n}{2} \right\rceil = \left\lfloor \frac{n^2}{4} \right\rfloor$. 
+
+Pokażemy, że żaden graf prosty bez trójkąta nie może mieć więcej krawędzi. Bez straty ogólności, dla dowolnej krawędzi $\{v, w\}$ wszystkie sąsiady $v$ i $w$ są różne, bo inaczej powstałby trójkąt. Zatem suma stopni wszystkich wierzchołków jest ograniczona, a dokładniej liczba krawędzi jest maksymalna wtedy, gdy $G$ jest kompletnym grafem dwudzielnym, czyli $|E| \leq \left\lfloor \frac{n^2}{4} \right\rfloor$. 
+
+\vspace{0.5em}
+\textit{Szkic dowodu alternatywnego:} Niech $v$ będzie wierzchołkiem o największym stopniu $d$. Jego sąsiedzi nie mogą być ze sobą połączeni, więc mogą mieć krawędzie tylko do pozostałych $n-d-1$ wierzchołków. Zliczając krawędzie i maksymalizując wyrażenie, otrzymujemy ograniczenie $|E| \leq \frac{n^2}{4}$. 
+
+\textbf{Wniosek:} Najwięcej krawędzi w grafie prostym bez trójkąta ma graf pełny dwudzielny z częściami możliwie równymi.
+% Twierdzenie Turana
+\end{document}
