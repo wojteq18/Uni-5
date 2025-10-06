@@ -334,4 +334,34 @@ Pokażemy, że żaden graf prosty bez trójkąta nie może mieć więcej krawęd
 
 \textbf{Wniosek:} Najwięcej krawędzi w grafie prostym bez trójkąta ma graf pełny dwudzielny z częściami możliwie równymi.
 % Twierdzenie Turana
+\newpage
+\section*{Ćwiczenia}
+
+\subsection*{Zadanie 1/1}
+
+Wiemy, że ilość wszystkich par wierzchołków w grafie prostym $G = (V, E)$ o $n$ wierzchołkach wynosi $\binom{n}{2}$.
+Każdą parę możemy połączyć krawędzią lub nie.
+Zatem ilość wszystkich grafów prostych na $n$ wierzchołkach wynosi:
+\[
+2^{\binom{n}{2}}
+\]
+
+\textbf{Pytanie:} Ile z nich ma dokładnie $m$ krawędzi? \\
+Jest to równoważne z wyborem $m$ krawędzi spośród wszystkich $\binom{n}{2}$ możliwych, zatem:
+\[
+\binom{\binom{n}{2}}{m}
+\]
+
+\subsection*{zadanie 1/2}
+\textbf{Pytanie:} Czy istnieje graf prosty o co najmniej dwóch wierzchołkach, w którym wszystkie wierzchołki mają różne stopnie?
+
+Taki graf $n$-wierzchołkowy musiałby mieć wierzchołki o stopniach: $0, 1, 2, \dots, n-1$.
+Wierzchołek o stopniu $n-1$ jest połączony z wszystkimi innymi wierzchołkami, co oznacza, że nie może istnieć wierzchołek o stopniu 0 (izolowany).
+Zatem nie istnieje graf prosty o co najmniej dwóch wierzchołkach, w którym wszystkie wierzchołki mają różne stopnie.
+
+\subsection*{zadanie 1/3}
+\textbf{Pytanie:} Czy suma stopni wszystkich wierzchołków w grafie prostym może być nieparzysta?
+
+Nie, ponieważ zgodnie z lematem o uściskach dłoni (handshaking lemma), suma stopni wszystkich wierzchołków w grafie jest równa podwojonej liczbie krawędzi ($ \sum_{v \in V} \deg(v) = 2|E| $), a więc jest zawsze liczbą parzystą.
+
 \end{document}
