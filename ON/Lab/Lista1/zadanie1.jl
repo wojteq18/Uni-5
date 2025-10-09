@@ -46,6 +46,62 @@ function eta64()
     return kandydat
 end
 
+function max16()
+    kandydat = Float16(1.0)
+    ostatni = Float16(1.0)
+    while !isinf(kandydat)
+        ostatni = kandydat
+        kandydat *= Float16(2.0)
+    end    
+
+    krok = ostatni / Float16(2.0)
+    while krok > Float16(0.0)
+        if !isinf(ostatni + krok)
+            ostatni += krok
+        end
+        krok /= Float16(2.0)
+    end
+    return ostatni
+end
+
+function max32()
+    kandydat = Float32(1.0)
+    ostatni = Float32(1.0)
+    while !isinf(kandydat)
+        ostatni = kandydat
+        kandydat *= Float32(2.0)
+    end    
+
+    krok = ostatni / Float32(2.0)
+    while krok > Float32(0.0)
+        if !isinf(ostatni + krok)
+            ostatni += krok
+        end
+        krok /= Float32(2.0)
+    end
+    return ostatni
+end
+
+function max64()
+    kandydat = Float64(1.0)
+    ostatni = Float64(1.0)
+    while !isinf(kandydat)
+        ostatni = kandydat
+        kandydat *= Float64(2.0)
+    end    
+
+    krok = ostatni / Float64(2.0)
+    while krok > Float64(0.0)
+        if !isinf(ostatni + krok)
+            ostatni += krok
+        end
+        krok /= Float64(2.0)
+    end
+    return ostatni
+end
+
+    
+
 our_value16 = eps16()
 println("Our value:  ", our_value16)
 
@@ -84,3 +140,12 @@ println("Our value:  ", our_value_eta64)
 
 real_value_eta64 = nextfloat(Float64(0.0))
 println("Real value: ", real_value_eta64)
+
+max_16 = max16()
+println("Our value:  ", max_16)
+
+max_32 = max32()
+println("Our value:  ", max_32)
+
+max_64 = max64()
+println("Our value:  ", max_64)
