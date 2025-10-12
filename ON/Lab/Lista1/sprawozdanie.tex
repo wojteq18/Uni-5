@@ -1,33 +1,29 @@
 \documentclass{article}
 
-% --- PAKIETY ---
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[polish]{babel}
 \usepackage[margin=1in]{geometry}
 
-% Pakiety matematyczne i do symboli
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
-% Pakiety do tabel i grafiki
 \usepackage{booktabs} % Lepsza jakość tabel
 \usepackage{graphicx}
 \usepackage{float}
 
-% Pakiety do formatowania i numeracji
-\usepackage{siunitx} % Ładniejsze formatowanie liczb (np. 1.23e-04)
+\usepackage{siunitx} 
 \sisetup{
     output-exponent-marker = e,
     bracket-numbers = false,
-    group-separator = {\,}, % Separator tysięcy
+    group-separator = {\,}, 
     scientific-notation = true
 }
 
 % Inne
-\usepackage{hyperref} % Linki w dokumencie
+\usepackage{hyperref} 
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
@@ -37,13 +33,12 @@
     pdfauthor={Wojciech Typer},
 }
 
-% --- USTAWIENIA DOKUMENTU ---
 \title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 1}
 \author{Wojciech Typer}
 
 \begin{document}
 \maketitle
-\section{Zdanie 1}
+\section*{Zadanie 1}
 
 \subsection{Epsilon maszynowy (\textit{macheps})}
 
@@ -113,7 +108,8 @@ Liczba \textit{MAX} to największa skończona wartość, jaką można zapisać w
 \bottomrule
 \end{tabular}
 \end{table}
-\section{Zadanie 2}
+
+\section*{Zadanie 2}
 W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metodą Kahana i te, zwrócone przez funkcję \texttt{eps()} w Julii.
 \begin{table}[H]
 \centering
@@ -129,8 +125,86 @@ W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metod
 \end{tabular}
 \end{table}
 
-\section{Zadanie 3}
+\section*{Zadanie 3}
 
+W zadaniu przeanalizowano rozkład liczb zmiennoprzecinkowych w arytmetyce \texttt{double} w różnych przedziałach. Gęstość rozmieszczenia tych liczb, czyli odległość między dwiema kolejnymi reprezentacjami, zależy od przedziału, w którym się znajdujemy. Sprawdzono to eksperymentalnie dla trzech przypadków.
 
+\begin{itemize}
+    \item \textbf{Przedział \([1, 2]\):} W arytmetyce \texttt{double}, liczby zmiennoprzecinkowe są rozmieszczone równomiernie na przedziale \([1, 2]\) z krokiem równym $\delta = 2^{-52}$. Oznacza to, że każda kolejna liczba na tym przedziale różni się od poprzedniej o dokładnie $\delta$. Sprawdzono to eksperymentalnie: 1000-krotnie generując losową liczbę z tego przedziału i wyznaczając kolejną liczbę maszynową za pomocą funkcji \texttt{nextfloat()}, różnica między nimi zawsze była równa $\delta$.
+
+    \item \textbf{Przedział \([0.5, 1]\):} Dla tego przedziału krok wynosi $\delta = 2^{-53}$. Każda liczba może być przedstawiona jako: $x = 1 + k \cdot \delta$, gdzie $k$ jest liczbą całkowitą, a $\delta = 2^{-53}$.
+
+    \item \textbf{Przedział \([2, 4]\):} W tym przypadku krok jest większy i wynosi $\delta = 2^{-51}$. Dla tego przedziału każda liczba może być przedstawiona jako: $x = 2 + k \cdot \delta$, gdzie $\delta = 2^{-51}$.
+\end{itemize}
+
+Powyższe eksperymenty potwierdzają, że w arytmetyce zmiennoprzecinkowej liczby są rozmieszczone gęściej bliżej zera i rzadziej w miarę oddalania się od niego.
+
+\newpage
+\section*{Zadanie 4}
+\begin{itemize}
+    \item Liczba znaleziona eksperymentalnie: 1.7935706239891005 - generujemy losową liczbę z przedziału \([1.0, 2.0]\) i sprawdzamy, czy $ x \cdot \frac{1}{x} \neq 1$. 
+    \item Najmniejsza liczba z przedziału \([1.0, 2.0]\), dla której zachodzi \(x \cdot \frac{1}{x} \neq 1\) to 1.000000057228997. Iterujemy od 1.0 w górę, aż do momentu, gdy warunek będzie spełniony.
+\end{itemize}
+
+\section*{Zadanie 5}
+
+W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektorów, aby zbadać ich stabilność numeryczną i wpływ na błędy zaokrągleń. Wyniki dla precyzji 32-bitowej (\texttt{Float32}) oraz 64-bitowej (\texttt{Float64}) przedstawiono w tabeli \ref{tab:sum_methods}.
+
+\begin{table}[H]
+\centering
+\label{tab:sum_methods}
+\begin{tabular}{lllS[table-format=1.18e-1]} % 'S' z siunitx do wyrównania liczb
+\toprule
+\textbf{Liczba bitów} & \textbf{Metoda} & \textbf{Wynik} \\
+\midrule
+\addlinespace % Dodatkowa przestrzeń dla czytelności
+\multicolumn{3}{l}{\textbf{Precyzja 32-bitowa (\texttt{Float32})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                & -0.4999443 \\
+& Metoda 2     & -0.4543457 \\
+& Metoda 3      & -0.5 \\
+& Metoda 4      & -0.5 \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Precyzja 64-bitowa (\texttt{Float64})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                 & 1.0251881368296672e-10 \\
+& Metoda 2     & -1.5643308870494366e-10 \\
+& Metoda 3     & 0.0 \\
+& Metoda 4      & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+\section*{Zadanie 6}
+\begin{table}[H]
+\centering
+\label{tab:methods_comparison_siunitx}
+\begin{tabular}{
+  c
+  S[table-format=1.18e2] % Poprawny format dla notacji naukowej
+  S[table-format=1.18e2]
+}
+\toprule
+\textbf{Wartość \(x\)} & {\textbf{Wynik metody 1}} & {\textbf{Wynik metody 2}} \\
+\midrule
+$8^{-1}$  & 0.0077822185373186414   & 0.0077822185373187065   \\
+$8^{-2}$  & 0.00012206286282867573  & 0.00012206286282875901  \\
+$8^{-3}$  & 1.9073468138230965e-6   & 1.907346813826566e-6    \\
+$8^{-4}$  & 2.9802321943606103e-8   & 2.9802321943606116e-8   \\
+$8^{-5}$  & 4.656612873077393e-10   & 4.6566128719931904e-10  \\
+$8^{-6}$  & 7.275957614183426e-12   & 7.275957614156956e-12   \\
+$8^{-7}$  & 1.1368683772161603e-13  & 1.1368683772160957e-13  \\
+$8^{-8}$  & 1.7763568394002505e-15  & 1.7763568394002489e-15  \\
+$8^{-9}$  & 0.0                       & 2.7755575615628914e-17  \\
+$8^{-10}$ & 0.0                       & 4.336808689942018e-19   \\
+\bottomrule
+\end{tabular}
+\end{table}
+Metoda nr 2 daje bardziej precyzyjne wyniki, ponieważ w jej formule nie ma żadnych operacji, które prowadziłyby do utraty precyzji
+
+\section*{Zadanie 7}
+\includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/7.png}
 
 \end{document}
