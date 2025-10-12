@@ -1,52 +1,136 @@
 \documentclass{article}
+
+% --- PAKIETY ---
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[polish]{babel}
-\usepackage{amsmath}
-\usepackage{tikz}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-\usepackage{hyperref}
-\usepackage{float}
-\usepackage{graphicx}
-\usepackage{mathtools}
-\usepackage{amsmath}
-\usepackage{amsfonts}
-\usepackage{amsmath}
-\usepackage{amsmath}
-\usepackage{booktabs}
 \usepackage[margin=1in]{geometry}
 
+% Pakiety matematyczne i do symboli
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
 
+% Pakiety do tabel i grafiki
+\usepackage{booktabs} % Lepsza jakość tabel
+\usepackage{graphicx}
+\usepackage{float}
 
+% Pakiety do formatowania i numeracji
+\usepackage{siunitx} % Ładniejsze formatowanie liczb (np. 1.23e-04)
+\sisetup{
+    output-exponent-marker = e,
+    bracket-numbers = false,
+    group-separator = {\,}, % Separator tysięcy
+    scientific-notation = true
+}
 
-\title{Obliczenia Naukowe - Lista 1}
+% Inne
+\usepackage{hyperref} % Linki w dokumencie
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Obliczenia Naukowe - Lista 1},
+    pdfauthor={Wojciech Typer},
+}
+
+% --- USTAWIENIA DOKUMENTU ---
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 1}
 \author{Wojciech Typer}
-\date{}
 
 \begin{document}
 \maketitle
+\section{Zdanie 1}
 
-\section*{zadanie 1}
-Wartości epsilona z kompilatora GCC13: 
+\subsection{Epsilon maszynowy (\textit{macheps})}
 
-\begin{enumerate}
-    \item 16 bitów: 0.00097656
-    \item 32 bity: 1.19209290e-07F
-    \item 64 bity: 2.2204460492503131e-16
-\end{enumerate}
+Epsilonem maszynowym \textit{macheps} nazywamy najmniejszą liczbę dodatnią taką, że w arytmetyce zmiennoprzecinkowej zachodzi \(1.0 + \text{macheps} > 1.0\). Jest to miara precyzji obliczeń, która określa odległość od liczby 1.0 do następnej reprezentowalnej liczby maszynowej. Im mniejszy epsilon, tym większa precyzja arytmetyki, co jest bezpośrednio związane z liczbą bitów przeznaczonych na mantysę w danym typie zmiennoprzecinkowym.
 
-Wartości epsilona wyznaczone eksperymentalnie: \\
-\begin{enumerate}
-    \item 16 bitów: 0.000977
-    \item 32 bity: 1.1920929e-7
-    \item 64 bity: 2.220446049250313e-16
-\end{enumerate} 
+Poniżej przedstawiono porównanie wartości \textit{macheps} uzyskanych iteracyjnie, wartości zwracanych przez funkcję \texttt{eps()} w Julii oraz wartości zdefiniowanych w pliku nagłówkowym \texttt{float.h} kompilatora C (GCC 13).
 
-\textbf{Epsilon maszynowy}  to najmniejsza liczba, taka, że gdy dodamy do niej 1.0 w wybranej arytmetyce, komputer rozróżni ją od 1.0. \\
-\textbf{Precyzja arytmetyki} oznacza, z jaką dokładnością komputer reprezentuje liczby rzeczywiste - Epsilon jest bezpośrednią miarą tej precyzji - im mniejszy
-epsilon, tym większa precyzja. \\ Epsilon zależy od liczby bitów w mantysie (części znaczącej liczby zmiennoprzecinkowej). \\
+\begin{table}[H]
+\centering
+\caption{Porównanie wartości epsilona maszynowego.}
+\label{tab:epsilon}
+\begin{tabular}{llll}
+\toprule
+\textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość z \texttt{eps(T)} (Julia)} & \textbf{Wartość wyznaczona iteracyjnie} \\
+\midrule
+\texttt{Float16} & \num{9.7656e-4} & \num{0.000977} & \num{0.000977} \\
+\texttt{Float32} & \num{1.19209290e-7} & \num{1.1920929e-7} & \num{1.1920929e-7} \\
+\texttt{Float64} & \num{2.2204460492503131e-16} & \num{2.220446049250313e-16} & \num{2.220446049250313e-16} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Jak widać w tabeli \ref{tab:epsilon}, wartości uzyskane eksperymentalnie są zgodne z wartościami referencyjnymi. 
+
+\subsection{Najmniejsza dodatnia liczba maszynowa (\textit{eta})}
+
+Liczba \textit{eta} (\(\eta\)) to najmniejsza dodatnia wartość, jaką można reprezentować w danym standardzie zmiennoprzecinkowym. Wartość ta jest związana z liczbami subnormalnymi (denormalizowanymi), które pozwalają na płynne "wypełnienie" luki między zerem a najmniejszą dodatnią liczbą znormalizowaną.
+
+\begin{itemize}
+    \item \textbf{Związek z \textit{MIN\textsubscript{sub}}}: Liczba \textit{eta} jest tożsama z \textit{MIN\textsubscript{sub}}, czyli najmniejszą możliwą do reprezentowania dodatnią liczbą subnormalną. W języku Julia wartość tę można uzyskać za pomocą funkcji \texttt{nextfloat(T(0.0))}.
+    \item \textbf{Związek z \textit{MIN\textsubscript{nor}}}: Funkcja \texttt{floatmin(T)} zwraca najmniejszą dodatnią liczbę \textbf{znormalizowaną}, znaną jako \textit{MIN\textsubscript{nor}}. Jest to wartość większa od \textit{eta}.
+\end{itemize}
+
+Wartości \textit{eta} wyznaczone iteracyjnie (poprzez dzielenie 1.0 przez 2 aż do uzyskania 0.0) są zgodne z wynikami funkcji \texttt{nextfloat(T(0.0))}. Porównanie tych wartości przedstawiono w tabeli \ref{tab:eta}.
+
+\begin{table}[H]
+\centering
+\caption{Porównanie wartości \textit{eta} (\(\eta\)).}
+\label{tab:eta}
+\begin{tabular}{lll}
+\toprule
+\textbf{Typ danych} & \textbf{Wartość z \texttt{nextfloat(T(0.0))}} & \textbf{Wartość wyznaczona iteracyjnie} \\
+\midrule
+\texttt{Float16} & \num{6.0e-8} & \num{6.0e-8} \\
+\texttt{Float32} & \num{1.4e-45} & \num{1.0e-45} \\ 
+\texttt{Float64} & \num{5.0e-324} & \num{5.0e-324} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 
-\end{document} 
+\subsection{Największa wartość skończona (\textit{MAX})}
+
+Liczba \textit{MAX} to największa skończona wartość, jaką można zapisać w danym typie zmiennoprzecinkowym. Próba reprezentacji liczby większej niż \textit{MAX} prowadzi do uzyskania wartości nieskończonej (\texttt{Inf}). Doświadczalne wyznaczenie tej wartości polega na iteracyjnym mnożeniu liczby przez 2, aż do momentu, gdy stanie się ona nieskończona, a następnie cofnięciu ostatniej operacji.
+
+\begin{table}[H]
+\centering
+\caption{Porównanie maksymalnych wartości zmiennoprzecinkowych.}
+\label{tab:max}
+\begin{tabular}{lll}
+\toprule
+\textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość wyznaczona iteracyjnie} \\
+\midrule
+\texttt{Float16} & \num{65504.0} & \num{6.55e4} \\
+\texttt{Float32} & \num{3.40282347e+38} & \num{3.4028235e38} \\
+\texttt{Float64} & \num{1.7976931348623157e+308} & \num{1.7976931348623157e308} \\
+\bottomrule
+\end{tabular}
+\end{table}
+\section{Zadanie 2}
+W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metodą Kahana i te, zwrócone przez funkcję \texttt{eps()} w Julii.
+\begin{table}[H]
+\centering
+\label{tab:kahan_comparison}
+\begin{tabular}{lll}
+\toprule
+\textbf{Typ danych} & \textbf{Wartość z metody Kahana} & \textbf{Wartość z \texttt{eps(T)} (Julia)} \\
+\midrule
+\texttt{Float16} & \num{-0.000977} & \num{0.000977} \\
+\texttt{Float32} & \num{1.1920929e-7} & \num{1.1920929e-7} \\
+\texttt{Float64} & \num{-2.220446049250313e-16} & \num{2.220446049250313e-16} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Zadanie 3}
+
+
+
+\end{document}

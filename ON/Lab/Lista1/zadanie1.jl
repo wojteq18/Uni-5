@@ -144,8 +144,17 @@ println("Real value: ", real_value_eta64)
 max_16 = max16()
 println("Our value:  ", max_16)
 
+real_max_16 = floatmax(Float16)
+println("Real value: ", real_max_16)
+
 max_32 = max32()
 println("Our value:  ", max_32)
 
+real_max_32 = floatmax(Float32)
+println("Real value: ", real_max_32)
+
 max_64 = max64()
 println("Our value:  ", max_64)
+
+real_max_64 = floatmax(Float64)
+println("Real value: ", real_max_64)
