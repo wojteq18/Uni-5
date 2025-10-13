@@ -417,7 +417,7 @@ Klasy abstrakcji relacji ~ definiujemy tzw. spójne składowe (komponenty) grafu
 > c(G) 
 %Algorytm Flammyego
 \newpage
-\section*{Ćwiczenia}
+\section*{Ćwiczenia - Lista 1}
 
 \subsection*{Zadanie 1/1}
 
@@ -445,5 +445,59 @@ Zatem nie istnieje graf prosty o co najmniej dwóch wierzchołkach, w którym ws
 \textbf{Pytanie:} Czy suma stopni wszystkich wierzchołków w grafie prostym może być nieparzysta?
 
 Nie, ponieważ zgodnie z lematem o uściskach dłoni (handshaking lemma), suma stopni wszystkich wierzchołków w grafie jest równa podwojonej liczbie krawędzi ($ \sum_{v \in V} \deg(v) = 2|E| $), a więc jest zawsze liczbą parzystą.
+
+\newpage
+\section*{Ćwiczenia - Lista 2}
+\subsection*{zadanie 2/1}
+Wiemy, że graf $G = (V, E)$ jest grafem prostym bez trójkątów - nie pojawiają się w nim podgrafy o trzech wierzchołkach, gdzie każdy wierzchołek jest połączony z pozostałymi dwoma.
+
+Oznaczmy: $N(x)$ - zbiór sąsiadów wierzchołka $x$ w grafie $G$. Z własności grafu bez trójkątów wynika, że $N(v) \cap N(w) = \emptyset$ dla każdej krawędzi $\{v, w\} \in E$.
+
+Ponieważ zbiory $N(v)$ i $N(w)$ są rozłączne, suma mocy ich zbiorów jest równa mocy ich unii: $|N(v)| + |N(w)| = |N(v) \cup N(w)|$. Zbiór $N(v) \cup N(w)$ jest podzbiorem $V$, więc $|N(v) \cup N(w)| \leq |V|$.
+Zatem $\deg(v) + \deg(w) \leq |V|$. \\
+
+Dowód własności z trójkątem:
+Niech ${v, w} \in E$. Załóżmy, że $N(v) \cap N(w) \neq \emptyset$. Wowczas wynika z tego: \\
+$\exists u \in V: u \in N(v) \land u \in N(w)$ \\
+Zatem $\{u, v\} \in E \land \{u, w\} \in E$, co oznacza, że wierzchołki $u, v, w$ tworzą trójkąt, co jest sprzeczne z założeniem.
+
+\subsection*{zadanie 2/2}
+Niech $G = (V, E)$ będzie grafem prostym. Musimy uzasadnić poniższe równanie:
+$\sum_{\{v, w\} \in E} (\deg(v) + \deg(w)) = \sum_{v \in V} (\deg(v))^2$. \\
+Po lewej stronie sumujemy dla każdej krawędzi $\{v, w\}$ sumę stopni jej końców. Oznacza to, że każdy wierzchołek $v$ jest liczony dokładnie $\deg(v)$ razy (raz dla każdej krawędzi incydentnej z $v$). Zatem lewa strona równania to:
+\[\sum_{v \in V} \deg(v) \cdot \deg(v) = \sum_{v \in V} (\deg(v))^2\]
+co jest dokładnie prawą stroną równania.
+
+\newpage
+
+\subsection*{zadanie 2/3}
+\begin{figure}[h!]
+    \centering
+    % Skalujemy obrazek do 80% szerokości tekstu
+    \includegraphics[width=0.8\textwidth]{/home/wojteq18/latex_photo/1.png}
+    \caption{Hiperkostka w kolejnych wymiarach.}
+    \label{fig:obrazek1}
+\end{figure}
+
+W $Q_{k}$
+\begin{itemize}
+    \item ilość wierzchołków: $2^k$
+    \item stopnie wierzchołków: $k$
+    \item ilość krawędzi: Z lematu o uściskach dłoni: $|E| = \frac{2^k \cdot k}{2} = k \cdot 2^{k-1}$, dla $ k \geq 1$
+\end{itemize}
+
+\textbf{Średnica hiperkostki:} \\
+Średnica hiperkostki $Q_k$ wynosi $k$. Wynika to z faktu, że hiperkostka formalnie definiowana jest jako graf, w którym wierzchołkami są wszystykie ciągi binarne dlugości k.
+Średnica to maksymalna odległość między dwoma wierzchołkami, a odległość między dwoma wierzchołkami w hiperkostce to liczba pozycji, na których ich reprezentacje binarne różnią się (odległość Hamminga). 
+Największa możliwa odległość występuje między wierzchołkami reprezentowanymi przez ciągi $000...0$ i $111...1$, które różnią się na wszystkich $k$ pozycjach. Zatem średnica hiperkostki $Q_k$ wynosi $k$. \\
+
+\textbf{$Q_{k}$ jako graf dwudzielny:} \\
+W hiperkostka $Q_k$ każdy wierzchołek można zdefiniować jako ciąg binarny długości $k$. Każdy wierzchołek łączy się z innymi, 
+wtedy, gdy ich reprezentacje różnią się dokładnie na jednej pozycji. Możemy podzielić wierzchołki na dwa zbiory:
+\begin{itemize}
+    \item $A$ - wierzchołki z parzystą liczbą jedynek w reprezentacji binarnej,
+    \item $B$ - wierzchołki z nieparzystą liczbą jedynek w reprezentacji binarnej.
+\end{itemize}   
+W ten sposób widać, że graf $Q_k$ jest dwudzielny.
 
 \end{document}
