@@ -330,10 +330,92 @@ Każda krawędź w grafie dwudzielnym $K_{|A|, |B|}$ łączy wierzchołek z $A$ 
 Pokażemy, że żaden graf prosty bez trójkąta nie może mieć więcej krawędzi. Bez straty ogólności, dla dowolnej krawędzi $\{v, w\}$ wszystkie sąsiady $v$ i $w$ są różne, bo inaczej powstałby trójkąt. Zatem suma stopni wszystkich wierzchołków jest ograniczona, a dokładniej liczba krawędzi jest maksymalna wtedy, gdy $G$ jest kompletnym grafem dwudzielnym, czyli $|E| \leq \left\lfloor \frac{n^2}{4} \right\rfloor$. 
 
 \vspace{0.5em}
-\textit{Szkic dowodu alternatywnego:} Niech $v$ będzie wierzchołkiem o największym stopniu $d$. Jego sąsiedzi nie mogą być ze sobą połączeni, więc mogą mieć krawędzie tylko do pozostałych $n-d-1$ wierzchołków. Zliczając krawędzie i maksymalizując wyrażenie, otrzymujemy ograniczenie $|E| \leq \frac{n^2}{4}$. 
+\textit{Dowód} Niech $v$ będzie wierzchołkiem o największym stopniu $d$. Jego sąsiedzi nie mogą być ze sobą połączeni, więc mogą mieć krawędzie tylko do pozostałych $n-d-1$ wierzchołków. Zliczając krawędzie i maksymalizując wyrażenie, otrzymujemy ograniczenie $|E| \leq \frac{n^2}{4}$. 
 
-\textbf{Wniosek:} Najwięcej krawędzi w grafie prostym bez trójkąta ma graf pełny dwudzielny z częściami możliwie równymi.
+\textbf{Wniosek:} Najwięcej krawędzi w grafie prostym bez trójkąta ma graf pełny dwudzielny z częściami możliwie równymi. \\
 % Twierdzenie Turana
+\newpage
+\textbf{Graf Eulerowski:} \\
+Niech $G = (V, E, \gamma)$ będzie grafem ogólnym.
+\begin{itemize}
+    \item Trasa to ciąg $v_{0} e_{1} v_{1} e_{2} v_{2} \dots$ taki, że $v_{0}, v_{1}, \dots \in V$ i $e_{1}, e_{2}, \dots \in E$
+    \item Ścieżka to trasa, która nie powtarza krawędzi
+    \item Ścieżka zamknięta to ścieżka, w której $v_{0} = v_{k}$ (zaczyna się i kończy w tym samym wierzchołku)
+    \item Droga to ścieżka, która nie powtarza wierzchołków.
+    \item Cykl to ścieżka, w której wierzchołki się nie powtarzają, poza $v_{0} = v_{k}$
+\end{itemize}
+\textbf{Definicja:} Niech $G = (V, E, \gamma), v,w \in V$. Odległością $v$ od $w$ nazywamy $d(v,w)$ - długość najkrótszej drogi z $v$ do $w$. 
+Jeżeli taka droga nie istnieje, to $d(v, w) = \infty$. \\
+\textbf{Definicja} Niech $G = (V, E, \gamma)$ G jest spójny, jeżeli: $\forall v, w \in V d(v, w) < \infty$ \\
+\textbf{Fakt: } Na zbiorze V można wprowadzić relację równoważności: \\
+\begin{center}
+    $\forall v, w \in V v~w \equiv d(v, w) < \infty$
+\end{center}
+Klasy abstrakcji relacji ~ definiujemy tzw. spójne składowe (komponenty) grafu G \\
+\textbf{Definicja: } Niech $G = (V, E, \gamma)$. G nazywamy eulerowskim, jeżeli w G istnieje ścieżka zamknięta, zawierająca każdą krawędź z E.
+%Tu daj przykład grafu eulerowskiego 6 wierzchołkowego
+\begin{center}
+\begin{tikzpicture}[
+    v/.style={circle, draw, fill=black!10, minimum size=22pt, inner sep=0pt},
+    every edge/.style={draw, thick}
+]
+    % Definicja wierzchołków
+    \node[v] (v1) at (90:2) {$v_1$};
+    \node[v] (v2) at (30:2) {$v_2$};
+    \node[v] (v3) at (330:2) {$v_3$};
+    \node[v] (v4) at (270:2) {$v_4$};
+    \node[v] (v5) at (210:2) {$v_5$};
+    \node[v] (v6) at (150:2) {$v_6$};
+    
+    % Definicja krawędzi
+    \path
+        % Zewnętrzny cykl (stopień 2 dla każdego wierzchołka)
+        (v1) edge (v2)
+        (v2) edge (v3)
+        (v3) edge (v4)
+        (v4) edge (v5)
+        (v5) edge (v6)
+        (v6) edge (v1)
+        % Trójkąt wewnętrzny (dodaje stopień 2 do v1, v3, v5)
+        (v1) edge (v3)
+        (v3) edge (v5)
+        (v5) edge (v1);
+\end{tikzpicture}
+\end{center}
+\textbf{Definicja: } Niech $G = (V, E, \gamma)$. G nazywamy pół eulerowskim, jeśli G nie jest eulerowski oraz w G istnieje ścieżka zawierająca każda krawędź z E
+\begin{center}
+\begin{tikzpicture}[
+    v/.style={circle, draw, fill=black!10, minimum size=22pt, inner sep=0pt},
+    every edge/.style={draw, thick}
+]
+    % Definicja wierzchołków w układzie kołowym
+    \node[v] (v1) at (90:2) {$v_1$};
+    \node[v] (v2) at (30:2) {$v_2$};
+    \node[v] (v3) at (330:2) {$v_3$};
+    \node[v] (v4) at (270:2) {$v_4$};
+    \node[v] (v5) at (210:2) {$v_5$};
+    \node[v] (v6) at (150:2) {$v_6$};
+    
+    % Definicja krawędzi
+    \path
+        % Zewnętrzny cykl (stopień 2 dla każdego wierzchołka)
+        (v1) edge (v2)
+        (v2) edge (v3)
+        (v3) edge (v4)
+        (v4) edge (v5)
+        (v5) edge (v6)
+        (v6) edge (v1)
+        % Krawędź wewnętrzna łącząca v1 i v4
+        % Zwiększa stopień v1 i v4 o 1, tworząc dwa wierzchołki nieparzyste
+        (v1) edge (v4);
+\end{tikzpicture}
+\end{center}
+\newpage
+\textbf{Lemat: }Niech $G = (V, E, \gamma)$. Jeżeli $\forall v \in V$, deg(v) $\geq$ 2, to w G występuje cykl. \\
+\textbf{Tw. Eulera, 1736} Niech $G = (V, E, \gamma)$ G jest eulerowski $\equiv$ G jest spójny i $\forall v \in V$ 2 | deg(v) \\
+\textbf{Definicja: }Niech $G = (V, E, \gamma)$, c(G) oznacza liczbe komponent grafu G. Krawędź $e \in E$ nazywamy mostem, jeżeli c(G / e) (graf G po usunięciu krawędzi e)
+> c(G) 
+%Algorytm Flammyego
 \newpage
 \section*{Ćwiczenia}
 
