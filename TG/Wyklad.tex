@@ -17,6 +17,8 @@
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage[margin=1in]{geometry}
+\usepackage{booktabs} % Dla ładniejszych linii w tabeli
+\usepackage{array}
 
 
 
@@ -417,6 +419,82 @@ Klasy abstrakcji relacji ~ definiujemy tzw. spójne składowe (komponenty) grafu
 > c(G) 
 %Algorytm Flammyego
 \newpage
+\subsection*{Grafy Hamiltonowskie}
+
+Graf $G = (V, E)$ nazywamy \emph{hamiltonowskim}, jeśli w G istnieje cykl, który zawiera każdy wierzchołek z V (dokładnie jeden raz).
+
+\begin{quote}
+\textbf{Definicja:} Graf $G = (V, E)$ nazywamy \emph{półhamiltonowskim}, jeżeli G nie jest hamiltonowski i w G istnieje droga zawierająca każdy wierzchołek z V (dokładnie jeden raz). Ta droga nazywana jest drogą lub ścieżką Hamiltona.
+\end{quote}
+
+\begin{center}
+  % Graf Hamiltonowski (cykl)
+  \begin{tikzpicture}[
+      v/.style={circle, draw, fill=black!10, minimum size=22pt, inner sep=0pt},
+      every edge/.style={draw, thick}
+  ]
+      % Wierzchołki
+      \node[v] (h1) at (90:1.5)  {$v_1$};
+      \node[v] (h2) at (0:1.5)   {$v_2$};
+      \node[v] (h3) at (270:1.5) {$v_3$};
+      \node[v] (h4) at (180:1.5) {$v_4$};
+      % Krawędzie
+      \path
+        (h1) edge (h2)
+        (h2) edge (h3)
+        (h3) edge (h4)
+        (h4) edge (h1);
+      % Podpis
+      %\node[font=\bfseries, below=0.5cm of h3] {Graf hamiltonowski};
+  \end{tikzpicture}
+  \qquad\qquad % Odstęp poziomy
+  % Graf półhamiltonowski (ścieżka)
+  \begin{tikzpicture}[
+      v/.style={circle, draw, fill=black!10, minimum size=22pt, inner sep=0pt},
+      every edge/.style={draw, thick}
+  ]
+      % Wierzchołki
+      \node[v] (p1) at (0,0) {$v_1$};
+      \node[v] (p2) at (2,0) {$v_2$};
+      \node[v] (p3) at (4,0) {$v_3$};
+      \node[v] (p4) at (6,0) {$v_4$};
+      % Krawędzie
+      \path
+        (p1) edge (p2)
+        (p2) edge (p3)
+        (p3) edge (p4);
+      % Podpis (poprawione pozycjonowanie)
+      \node[font=\bfseries] at (3, -1.2) {Graf półhamiltonowski};
+  \end{tikzpicture}
+\end{center}
+
+\noindent\textbf{Uwaga:} Pętle i multikrawędzie nie mają wpływu na rozważania nad hamiltonowskością grafu, zatem ograniczamy się do grafów prostych.
+
+\vspace{1em} % Dodatkowy odstęp przed tabelą
+
+% Tabela bez pakietu booktabs
+\begin{table}[h!]
+\centering
+\caption{Porównanie cyklu Eulera i cyklu Hamiltona}
+\begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Cykl Eulera} & \textbf{Cykl Hamiltona} \\
+\hline
+Warunkiem koniecznym i wystarczającym istnienia w grafie spójnym jest to, aby każdy wierzchołek miał stopień parzysty. & Odwiedza każdy wierzchołek grafu dokładnie jeden raz. \\[4mm]
+Każda krawędź musi być użyta dokładnie jeden raz. & Może pomijać niektóre krawędzie, aby uniknąć ponownego odwiedzania wierzchołków. \\[4mm]
+Istnieją algorytmy o złożoności wielomianowej znajdujące cykl (np. algorytm Hierholzera O($|E|$)). & Problem decyzyjny jest NP-zupełny. Nie jest znany algorytm o złożoności wielomianowej, który by orzekał, czy dany graf jest hamiltonowski. \\
+\hline
+\end{tabular}
+\end{table}
+\begin{quote}
+\textbf{Twierdzenie Diraca (1952):} Niech $G = (V, E)$ będzie grafem prostym o $|V| \geq 3$ oraz $\forall v \in V: \deg(v) \geq \frac{|V|}{2}$. Wówczas G jest hamiltonowski.
+\end{quote}
+
+\begin{quote}
+\textbf{Twierdzenie Orego (1960):} Niech $G = (V, E)$ będzie grafem prostym o $|V| \geq 3$ oraz dla każdej pary niepołączonych krawędzią wierzchołków $\{v, w\}$ zachodzi $\deg(v) + \deg(w) \geq |V|$. Wówczas G jest hamiltonowski.
+\end{quote}
+\newpage
+%ćwiczenie: zaproponuj algorytm o złożoności wielomianowej, który znajduje cykl hamiltona w grafie spełniającym założenia twierdzenia orego
 \section*{Ćwiczenia - Lista 1}
 
 \subsection*{Zadanie 1/1}
@@ -499,5 +577,14 @@ wtedy, gdy ich reprezentacje różnią się dokładnie na jednej pozycji. Możem
     \item $B$ - wierzchołki z nieparzystą liczbą jedynek w reprezentacji binarnej.
 \end{itemize}   
 W ten sposób widać, że graf $Q_k$ jest dwudzielny.
+
+\newpage
+\subsection*{zadanie 2/4}
+$K_{2, 2}$ to graf dwudzielny, w którym wierzchołki są podzielone na dwa zbiory, oba zawierające po 2 wierzchołki.
+
+\subsection*{zadanie 2/5}
+Niech $G = (V, E)$ będzie grafem dwudzielnym z trójkątem. Oznacza to, że: \\
+$\exists (A, B \subseteq V) (A \cap B = \emptyset \land A \cup B = V \land \forall {w, v} \in E (w \in A \land v \in B))$ \\
+Weźmy jeden z takich trójkątów i pokolorujmy jego wierzchołki na dwa kolory, tak aby żadne dwa sąsiednie wierzchołki nie miały tego samego koloru. Ponieważ trójkąt ma trzy wierzchołki, a my mamy tylko dwa kolory, to zgodnie z zasadą szufladkową, co najmniej dwa wierzchołki muszą być tego samego koloru. Jednak te dwa wierzchołki są połączone krawędzią (bo są częścią trójkąta), co jest sprzeczne z założeniem, że żadne dwa sąsiednie wierzchołki nie mogą mieć tego samego koloru. \\
 
 \end{document}
