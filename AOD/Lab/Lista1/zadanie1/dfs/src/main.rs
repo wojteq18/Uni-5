@@ -1,4 +1,3 @@
-use std::collections::VecDeque;
 use std::io::BufReader;
 use std::fs::File;
 use std::error::Error;
@@ -7,39 +6,45 @@ use std::io::Write;
 use std::env;
 use std::process;
 
-fn bfs(vert_number: &usize,adj_list: &Vec<Vec<usize>>, source: usize, tree: bool) {
-    let mut fifo_queue: VecDeque<usize> = VecDeque::new();
-    let mut colors: Vec<usize> = vec![0; *vert_number + 1]; //o -> white, 1 -> gray, 2 -> black
-    let mut distance: Vec<i16> = vec![-1; *vert_number + 1]; //-1 means infinity
-    let mut parents: Vec<isize> = vec![-1; *vert_number + 1]; //-1 means null
-    let mut visit_order: Vec<usize> = Vec::new(); //to store the order of visits
 
-    colors[source] = 1; //gray
-    distance[source] = 0;
+fn dfs_visit(
+    color: &mut Vec<usize>,
+    adj_list: &Vec<Vec<usize>>,
+    u: usize, 
+    parent: &mut Vec<usize>,
+    order: &mut usize,
+) {
+    color[u] = 1; // Gray
 
-    fifo_queue.push_back(source);
-
-    while let Some(u) = fifo_queue.pop_front() {
-        visit_order.push(u);
-        for v in &adj_list[u] {
-            if colors[*v] == 0 {
-                colors[*v] = 1; //gray
-                distance[*v] = distance[u] + 1;
-                parents[*v] = u as isize;
-                fifo_queue.push_back(*v);
-            }
+    for v in &adj_list[u] {
+        if color[*v] == 0 { 
+            *order += 1;
+            parent[*v] = u;
+            dfs_visit(color, adj_list, *v, parent, order);
         }
-        colors[u] = 2; //black
+    }
+    color[u] = 2; // Black
     }
 
-    let order_str: Vec<String> = visit_order.iter().map(|&n| n.to_string()).collect();
-    println!("order of visits: {}", order_str.join(" -> "));
+fn dfs(num_vertex: &usize, adj_list: &Vec<Vec<usize>>, print_tree: &bool) {
+    let mut color: Vec<usize> = vec![0; num_vertex + 1]; // 0:white, 1:gray, 2:black
+    let mut parent: Vec<usize> = vec![0; num_vertex + 1]; // 0 means no parent
+    let mut order: usize = 0; // Edge discovery order counter
 
-    if tree == true {
-        let mut file = File::create("bfs_tree.txt").expect("Impossible to create file");
-        for v in 1..= *vert_number {
-            if parents[v] != -1 {
-                writeln!(file, "{} {} {}", parents[v], v, distance[v]).expect("Błąd zapisu.");
+
+    for u in 1..=*num_vertex {
+        if color[u] == 0 { 
+            dfs_visit(&mut color, adj_list, u, &mut parent, &mut order);
+        }
+    }
+
+    if *print_tree {
+        let mut file = File::create("dfs_tree.txt").expect("Impossible to create file");
+        let mut temp_order = 0;
+        for v in 1..=*num_vertex {
+            if parent[v] != 0 { // If vertex 'v' has a parent
+                temp_order += 1;
+                writeln!(file, "{} {} {}", parent[v], v, temp_order).expect("Impossible to write to file");
             }
         }
     }
@@ -79,5 +84,5 @@ fn main() {
     }
     let tree = &args[1];
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
-    bfs(&num_vex, &adj_list, 1, tree == "Y");
+    dfs(&num_vex, &adj_list, &(tree == "Y"));
 }
