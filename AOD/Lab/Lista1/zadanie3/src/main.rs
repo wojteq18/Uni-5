@@ -112,7 +112,6 @@ fn main() {
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
     let start = Instant::now();
     let mut order = dfs(&num_vex, &adj_list);
-    order.sort();
     order.reverse();
     let adj_list_t = transpose_graph(&adj_list, num_vex);
     let scc_list = dfs_for_t(&num_vex, &adj_list_t, &order);
