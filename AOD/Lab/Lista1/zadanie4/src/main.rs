@@ -3,10 +3,11 @@ use std::io::BufReader;
 use std::fs::File;
 use std::error::Error;
 use std::io::BufRead;
+use std::time::Instant; 
 
 fn bfs(vert_number: &usize,adj_list: &Vec<Vec<usize>>, source: usize) -> (Vec<usize>, Vec<usize>, Vec<usize>) {
     let mut fifo_queue: VecDeque<usize> = VecDeque::new();
-    let mut colors: Vec<usize> = vec![0; *vert_number + 1]; //o -> white, 1 -> gray, 2 -> black
+    let mut colors: Vec<usize> = vec![0; *vert_number + 1]; //0 -> white, 1 -> gray, 2 -> black
     let mut distance: Vec<i16> = vec![-1; *vert_number + 1]; //-1 means infinity
     let mut parents: Vec<isize> = vec![-1; *vert_number + 1]; //-1 means null
     let mut visit_order: Vec<usize> = Vec::new(); //to store the order of visits
@@ -16,8 +17,10 @@ fn bfs(vert_number: &usize,adj_list: &Vec<Vec<usize>>, source: usize) -> (Vec<us
     distance[source] = 0;
     number[source] = 0;
 
+
     let mut vec_0 = Vec::new();
     let mut vec_1 = Vec::new();
+    vec_0.push(source);
 
     fifo_queue.push_back(source);
 
@@ -76,15 +79,23 @@ fn parse_simple_format(file_path: &str) -> Result<(usize, Vec<Vec<usize>>), Box<
 
 fn main() {
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
-    let (mut vec_0, mut vec_1, colors) = bfs(&num_vex, &adj_list, 1);
+    let start = Instant::now();
+    let (mut vec_0, mut vec_1, mut colors) = bfs(&num_vex, &adj_list, 1);
 
-    for u in 1..=num_vex {
-        if colors[u] == 0 {
-            let (vec00, vec11, _colors) = bfs(&num_vex, &adj_list, u);
-            vec_0.append(&mut vec00.clone());
-            vec_1.append(&mut vec11.clone());
+    if colors.is_empty() == false {
+        for u in 1..=num_vex {
+            if colors[u] == 0 {
+                let (vec00, vec11, colors11) = bfs(&num_vex, &adj_list, u);
+                vec_0.append(&mut vec00.clone());
+                vec_1.append(&mut vec11.clone());
+                for v in 1..=num_vex {
+                    if colors11[v] != 0 {
+                        colors[v] = colors11[v];
+                    }
+                }    
+            }
         }
-    }
+    }    
 
     if num_vex <= 200 {
         let vec_0_str: Vec<String> = vec_0.iter().map(|&n| n.to_string()).collect();
@@ -92,4 +103,6 @@ fn main() {
         println!("Set 0: {}", vec_0_str.join(", "));
         println!("Set 1: {}", vec_1_str.join(", "));
     }
+    let duration = start.elapsed();
+    println!("Time elapsed: {:?}", duration);
 }

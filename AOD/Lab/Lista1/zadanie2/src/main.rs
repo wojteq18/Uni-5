@@ -3,6 +3,8 @@ use std::fs::File;
 use std::error::Error;
 use std::io::BufRead;
 use std::io::Write;
+use std::time::Instant; 
+
 
 
 fn dfs_visit(
@@ -84,5 +86,8 @@ fn parse_simple_format(file_path: &str) -> Result<(usize, Vec<Vec<usize>>), Box<
 
 fn main() {
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
+        let start = Instant::now();
     dfs_top(num_vex, &adj_list);
+    let duration = start.elapsed();
+    println!("Time elapsed in dfs_top() is: {:?}", duration);
 }

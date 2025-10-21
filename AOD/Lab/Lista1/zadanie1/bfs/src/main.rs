@@ -6,6 +6,8 @@ use std::io::BufRead;
 use std::io::Write;
 use std::env;
 use std::process;
+use std::time::Instant; 
+
 
 fn bfs(vert_number: &usize,adj_list: &Vec<Vec<usize>>, source: usize, tree: bool) {
     let mut fifo_queue: VecDeque<usize> = VecDeque::new();
@@ -79,5 +81,8 @@ fn main() {
     }
     let tree = &args[1];
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
+    let start = Instant::now();
     bfs(&num_vex, &adj_list, 1, tree == "Y");
+    let duration = start.elapsed();
+    println!("Time elapsed in bfs() is: {:?}", duration);
 }

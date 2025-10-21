@@ -2,6 +2,8 @@ use std::io::BufReader;
 use std::fs::File;
 use std::error::Error;
 use std::io::BufRead;
+use std::time::Instant; 
+
 
 
 fn dfs_visit(
@@ -108,6 +110,7 @@ fn transpose_graph(adj_list: &Vec<Vec<usize>>, num_vertex: usize) -> Vec<Vec<usi
 
 fn main() {
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
+    let start = Instant::now();
     let mut order = dfs(&num_vex, &adj_list);
     order.sort();
     order.reverse();
@@ -120,5 +123,7 @@ fn main() {
         for (i, scc) in scc_list.iter().enumerate() {
             println!("SCC {}: {:?}", i + 1, scc);
         }
-    }    
+    }   
+    let duration = start.elapsed();
+    println!("Time elapsed in scc() is: {:?}", duration); 
 }

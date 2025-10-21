@@ -5,6 +5,8 @@ use std::io::BufRead;
 use std::io::Write;
 use std::env;
 use std::process;
+use std::time::Instant; 
+
 
 
 fn dfs_visit(
@@ -85,5 +87,8 @@ fn main() {
     }
     let tree = &args[1];
     let (num_vex, adj_list) = parse_simple_format("/home/wojteq18/sem5/AOD/Lab/Lista1/graph_for_rust.txt").unwrap();
+    let start = Instant::now();
     dfs(&num_vex, &adj_list, &(tree == "Y"));
+    let duration = start.elapsed();
+    println!("Time elapsed in dfs() is: {:?}", duration);
 }
