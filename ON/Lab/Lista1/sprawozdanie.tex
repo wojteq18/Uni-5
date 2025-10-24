@@ -55,8 +55,8 @@ Poniżej przedstawiono porównanie wartości \textit{macheps} uzyskanych iteracy
 \textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość z \texttt{eps(T)} (Julia)} & \textbf{Wartość wyznaczona iteracyjnie} \\
 \midrule
 \texttt{Float16} & \num{9.7656e-4} & \num{0.000977} & \num{0.000977} \\
-\texttt{Float32} & \num{1.19209290e-7} & \num{1.1920929e-7} & \num{1.1920929e-7} \\
-\texttt{Float64} & \num{2.2204460492503131e-16} & \num{2.220446049250313e-16} & \num{2.220446049250313e-16} \\
+\texttt{Float32} & \num{1.192093e-07} & \num{1.1920929e-7} & \num{1.1920929e-7} \\
+\texttt{Float64} & \num{2.220446e-16} & \num{2.220446049250313e-16} & \num{2.220446049250313e-16} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -83,7 +83,7 @@ Wartości \textit{eta} wyznaczone iteracyjnie (poprzez dzielenie 1.0 przez 2 aż
 \textbf{Typ danych} & \textbf{Wartość z \texttt{nextfloat(T(0.0))}} & \textbf{Wartość wyznaczona iteracyjnie} \\
 \midrule
 \texttt{Float16} & \num{6.0e-8} & \num{6.0e-8} \\
-\texttt{Float32} & \num{1.4e-45} & \num{1.0e-45} \\ 
+\texttt{Float32} & \num{1.0e-45} & \num{1.0e-45} \\ 
 \texttt{Float64} & \num{5.0e-324} & \num{5.0e-324} \\
 \bottomrule
 \end{tabular}
@@ -103,11 +103,13 @@ Liczba \textit{MAX} to największa skończona wartość, jaką można zapisać w
 \textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość wyznaczona iteracyjnie} \\
 \midrule
 \texttt{Float16} & \num{65504.0} & \num{6.55e4} \\
-\texttt{Float32} & \num{3.40282347e+38} & \num{3.4028235e38} \\
+\texttt{Float32} & \num{3.4028234663852886e+38} & \num{3.4028235e38} \\
 \texttt{Float64} & \num{1.7976931348623157e+308} & \num{1.7976931348623157e308} \\
 \bottomrule
 \end{tabular}
 \end{table}
+Jak widać w tabeli \ref{tab:max}, wartości uzyskane eksperymentalnie są zgodne z wartościami referencyjnymi. 
+
 
 \section*{Zadanie 2}
 W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metodą Kahana i te, zwrócone przez funkcję \texttt{eps()} w Julii.
@@ -122,8 +124,15 @@ W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metod
 \texttt{Float32} & \num{1.1920929e-7} & \num{1.1920929e-7} \\
 \texttt{Float64} & \num{-2.220446049250313e-16} & \num{2.220446049250313e-16} \\
 \bottomrule
+
+
 \end{tabular}
 \end{table}
+\paragraph{Wnioski}
+\sloppy 
+Z powyższej tabeli widzimy, że aby wyrażenie Kahana poprawnie wyznaczało epsilon maszynowy dla wszystkich typów zmiennopozycyjnych,
+należy na wynik nałożyć wartość bezwzględną. Błędy w bicie znaku wynikają z reprezentacji rozwinięcia binarnego ułamka $\frac{4}{3}$.
+\fussy % Przywróć domyślne ustawienia
 
 \section*{Zadanie 3}
 
@@ -137,18 +146,18 @@ W zadaniu przeanalizowano rozkład liczb zmiennoprzecinkowych w arytmetyce \text
     \item \textbf{Przedział \([2, 4]\):} W tym przypadku krok jest większy i wynosi $\delta = 2^{-51}$. Dla tego przedziału każda liczba może być przedstawiona jako: $x = 2 + k \cdot \delta$, gdzie $\delta = 2^{-51}$.
 \end{itemize}
 
-Powyższe eksperymenty potwierdzają, że w arytmetyce zmiennoprzecinkowej liczby są rozmieszczone gęściej bliżej zera i rzadziej w miarę oddalania się od niego.
-
-\newpage
+Powyższe eksperymenty potwierdzają, że w arytmetyce zmiennoprzecinkowej liczby są rozmieszczone gęściej bliżej zera i rzadziej w miarę oddalania się od niego. Zjawisko to nie jest przypadkowe, lecz wynika bezpośrednio ze sposobu, w jaki liczby są reprezentowane w formacie IEEE 754.
 \section*{Zadanie 4}
 \begin{itemize}
     \item Liczba znaleziona eksperymentalnie: 1.7935706239891005 - generujemy losową liczbę z przedziału \([1.0, 2.0]\) i sprawdzamy, czy $ x \cdot \frac{1}{x} \neq 1$. 
     \item Najmniejsza liczba z przedziału \([1.0, 2.0]\), dla której zachodzi \(x \cdot \frac{1}{x} \neq 1\) to 1.000000057228997. Iterujemy od 1.0 w górę, aż do momentu, gdy warunek będzie spełniony.
 \end{itemize}
 
+\textbf{Wnioski: } Działania w arytmetyce zmiennopozycyjnej obarczone są błędem, który należy brać pod uwagę nawet podczas podstawowych operacji.
+
 \section*{Zadanie 5}
 
-W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektorów, aby zbadać ich stabilność numeryczną i wpływ na błędy zaokrągleń. Wyniki dla precyzji 32-bitowej (\texttt{Float32}) oraz 64-bitowej (\texttt{Float64}) przedstawiono w tabeli \ref{tab:sum_methods}.
+W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektorów, aby zbadać ich stabilność numeryczną i wpływ na błędy zaokrągleń. Wyniki dla precyzji 32-bitowej (\texttt{Float32}) oraz 64-bitowej (\texttt{Float64}) przedstawiono w tabeli \ref{tab:sum_methods}. \\
 
 \begin{table}[H]
 \centering
@@ -162,20 +171,42 @@ W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektor
 \cmidrule(r){1-3}
 & Metoda 1                & -0.4999443 \\
 & Metoda 2     & -0.4543457 \\
-& Metoda 3      & -0.5 \\
-& Metoda 4      & -0.5 \\
+& Metoda 3      & 0.0 \\
+& Metoda 4      & 0.0 \\
 \addlinespace
 \multicolumn{3}{l}{\textbf{Precyzja 64-bitowa (\texttt{Float64})}} \\
 \cmidrule(r){1-3}
 & Metoda 1                 & 1.0251881368296672e-10 \\
 & Metoda 2     & -1.5643308870494366e-10 \\
-& Metoda 3     & 0.0 \\
-& Metoda 4      & 0.0 \\
+& Metoda 3     & -0.5 \\
+& Metoda 4      & -0.5 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table} 
+\vspace{0.5cm}
 
-\newpage
+\begin{description}
+    \item[\textbf{Metoda 1:}] Obliczanie "w przód":
+    \[ \sum_{i=1}^{n} x_i y_i \]
+
+    \item[\textbf{Metoda 2:}] Obliczanie "w tył":
+    \[ \sum_{i=n}^{1} x_i y_i \]
+
+    \item[\textbf{Metoda 3:}] Sumowanie osobno iloczynów dodatnich w porządku od największego do najmniejszego i osobno iloczynów ujemnych w porządku od najmniejszego do największego, a następnie dodanie obliczonych sum częściowych.
+
+    \item[\textbf{Metoda 4:}] Przeciwnie do metody 3.
+\end{description}
+
+\vspace{0.5cm}
+
+\noindent\rule{\textwidth}{0.4pt}
+\textbf{Wnioski:}
+\begin{itemize}
+    \item Kolejność sumowania ma znaczenie, a wielkość błędu w poszczególnych metodach jest różna.
+    \item Dla precyzji 32-bitowej, metody 3 i 4 dają wynik najbliższy poprawnemu.
+    \item Dla precyzji 64-bitowej, najbardziej dokładny wynik daje metoda 2.
+\end{itemize}
+\noindent\rule{\textwidth}{0.4pt}
 
 \section*{Zadanie 6}
 \begin{table}[H]
@@ -199,12 +230,26 @@ $8^{-7}$  & 1.1368683772161603e-13  & 1.1368683772160957e-13  \\
 $8^{-8}$  & 1.7763568394002505e-15  & 1.7763568394002489e-15  \\
 $8^{-9}$  & 0.0                       & 2.7755575615628914e-17  \\
 $8^{-10}$ & 0.0                       & 4.336808689942018e-19   \\
+$8^{-20}$ & 0.0                       & 3.76158192263132e-37                       \\
+$8^{-21}$ & 0.0                       & 5.877471754111438e-39                      \\
+$8^{-22}$ & 0.0                       & 9.183549615799121e-41                \\
+$8^{-23}$ & 0.0                       & 1.4349296274686127e-42             \\
+$8^{-24}$ & 0.0                       & 2.2420775429197073e-44            \\
+$8^{-25}$ & 0.0                       & 3.503246160812043e-46            \\
 \bottomrule
 \end{tabular}
 \end{table}
-Metoda nr 2 daje bardziej precyzyjne wyniki, ponieważ w jej formule nie ma żadnych operacji, które prowadziłyby do utraty precyzji
+Z matematycznego punktu widzenia f = g. Dla pierwszych iteracji obie funkcje dają zbliżone wyniki, jednak dla $ x \leq 8^{-9}$ funkcja f zaczyna zwracać
+wyniki mocno odbiegające od rzeczywistych wartości. Znacznie bardziej wiarygodne są wyniki zwracane przez funkcję g. Problemem funkcji f jest odejmowanie, zauważmy bowiem, że:
+$x \rightarrow 0$ : $\sqrt{x^{2} + 1} \rightarrow 1$, zaś odejmowanie liczb bardzo bliskich sobie jest obarczone dużym błędem. 
+W funkci g ten problem nie występuje, dzięki przekształceniu wyrażenia unikamy odejmowania.
 
 \section*{Zadanie 7}
-\includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/7.png}
+\includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/71.png}
 
+Dokładną wartość pochodnej możemy uzyskać obliczając: $\frac{d}{dx} sin(x) + cos (3x) = cos(x) - 3sin(3x)$
+
+Analizując otrzymane wyniki, widzimy, że początkowo wraz ze zmniejszeniem wartości h, błąd przybliżenia pochodnej maleje. Jednak od około $ h = 2^{-27}$ błąd zaczyna 
+rosnąć, wraz ze zmniejszaniem wartości h. Jest to spowodowane błędami zaokrągleń. Gdy h jest bardzo małe, różnica $f(x+h) - f(x)$ staje się bardzo mała i jest
+reprezentowana z ograniczoną precyzją w arytmetyce zmiennoprzecinkowej. 
 \end{document}
