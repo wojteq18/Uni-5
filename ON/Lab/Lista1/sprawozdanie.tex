@@ -63,14 +63,18 @@ Poniżej przedstawiono porównanie wartości \textit{macheps} uzyskanych iteracy
 
 Jak widać w tabeli \ref{tab:epsilon}, wartości uzyskane eksperymentalnie są zgodne z wartościami referencyjnymi. 
 
+\textbf{Związek między macheps a $\epsilon$}: Porównując wartość macheps z wartościami precyzji arytmetyki podanymi na wykładzie,
+to możemy zauważyć następującą zależność: $\text{macheps} = 2 \cdot \epsilon$. %Oznacza to, że epsilon maszynowy jest dwukrotnością wartości $\epsilon$ definiowanej jako odległość między 1.0 a następną reprezentowalną liczbą maszynową.
+
 \subsection{Najmniejsza dodatnia liczba maszynowa (\textit{eta})}
 
 Liczba \textit{eta} (\(\eta\)) to najmniejsza dodatnia wartość, jaką można reprezentować w danym standardzie zmiennoprzecinkowym. Wartość ta jest związana z liczbami subnormalnymi (denormalizowanymi), które pozwalają na płynne "wypełnienie" luki między zerem a najmniejszą dodatnią liczbą znormalizowaną.
 
 \begin{itemize}
     \item \textbf{Związek z \textit{MIN\textsubscript{sub}}}: Liczba \textit{eta} jest tożsama z \textit{MIN\textsubscript{sub}}, czyli najmniejszą możliwą do reprezentowania dodatnią liczbą subnormalną. W języku Julia wartość tę można uzyskać za pomocą funkcji \texttt{nextfloat(T(0.0))}.
-    \item \textbf{Związek z \textit{MIN\textsubscript{nor}}}: Funkcja \texttt{floatmin(T)} zwraca najmniejszą dodatnią liczbę \textbf{znormalizowaną}, znaną jako \textit{MIN\textsubscript{nor}}. Jest to wartość większa od \textit{eta}.
+    \item \textbf{Związek z \textit{MIN\textsubscript{nor}}}: Funkcja \texttt{floatmin(T)} zwraca najmniejszą dodatnią liczbę \textbf{znormalizowaną}, znaną jako \textit{MIN\textsubscript{nor}}. Dla odpowiednio \texttt{Float32} i \texttt{Float64} wartości te wynoszą: \num{1.1754944e-38} i \num{2.2250738585072014e-308}, co zgadza się z wartościami podanymi na wykładzie.
 \end{itemize}
+
 
 Wartości \textit{eta} wyznaczone iteracyjnie (poprzez dzielenie 1.0 przez 2 aż do uzyskania 0.0) są zgodne z wynikami funkcji \texttt{nextfloat(T(0.0))}. Porównanie tych wartości przedstawiono w tabeli \ref{tab:eta}.
 
@@ -98,13 +102,13 @@ Liczba \textit{MAX} to największa skończona wartość, jaką można zapisać w
 \centering
 \caption{Porównanie maksymalnych wartości zmiennoprzecinkowych.}
 \label{tab:max}
-\begin{tabular}{lll}
+\begin{tabular}{llll}
 \toprule
-\textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość wyznaczona iteracyjnie} \\
+\textbf{Typ danych} & \textbf{Wartość z \texttt{float.h} (GCC)} & \textbf{Wartość wyznaczona iteracyjnie} & \textbf{Wartość z \texttt{floatmax(T)} (Julia)} \\
 \midrule
-\texttt{Float16} & \num{65504.0} & \num{6.55e4} \\
-\texttt{Float32} & \num{3.4028234663852886e+38} & \num{3.4028235e38} \\
-\texttt{Float64} & \num{1.7976931348623157e+308} & \num{1.7976931348623157e308} \\
+\texttt{Float16} & --- & \num{6.55e4} & \num{6.55e4} \\
+\texttt{Float32} & \num{3.4028234663852886e+38} & \num{3.4028235e38} & \num{3.4028235e38} \\
+\texttt{Float64} & \num{1.7976931348623157e+308} & \num{1.7976931348623157e308} & \num{1.7976931348623157e308} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -245,11 +249,64 @@ $x \rightarrow 0$ : $\sqrt{x^{2} + 1} \rightarrow 1$, zaś odejmowanie liczb bar
 W funkci g ten problem nie występuje, dzięki przekształceniu wyrażenia unikamy odejmowania.
 
 \section*{Zadanie 7}
-\includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/71.png}
+\includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/wykres.png}
 
 Dokładną wartość pochodnej możemy uzyskać obliczając: $\frac{d}{dx} sin(x) + cos (3x) = cos(x) - 3sin(3x)$
 
 Analizując otrzymane wyniki, widzimy, że początkowo wraz ze zmniejszeniem wartości h, błąd przybliżenia pochodnej maleje. Jednak od około $ h = 2^{-27}$ błąd zaczyna 
 rosnąć, wraz ze zmniejszaniem wartości h. Jest to spowodowane błędami zaokrągleń. Gdy h jest bardzo małe, różnica $f(x+h) - f(x)$ staje się bardzo mała i jest
 reprezentowana z ograniczoną precyzją w arytmetyce zmiennoprzecinkowej. 
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        $h$ & $\tilde{f}'(x_0)$ & Błąd bezwzględny \\
+        \hline
+        $2^{0}$ & $2.017989$ & $1.901047$ \\
+        \hline
+        $2^{-1}$ & $1.870441$ & $1.753499$ \\
+        \hline
+        $2^{-2}$ & $1.107787$ & $0.990845$ \\
+        \hline
+        $2^{-3}$ & $0.623241$ & $0.506299$ \\
+        \hline
+        $2^{-4}$ & $0.370400$ & $0.253458$ \\
+        \hline
+        $2^{-5}$ & $0.243443$ & $0.126501$ \\
+        \hline
+        $2^{-6}$ & $0.180098$ & $0.0631553$ \\
+        \hline
+        $2^{-7}$ & $0.148491$ & $0.0315491$ \\
+        \hline
+        $2^{-8}$ & $0.132709$ & $0.0157668$ \\
+        \hline
+        $2^{-9}$ & $0.124824$ & $0.00788141$ \\
+        \hline
+        $2^{-10}$ & $0.120882$ & $0.00394020$ \\
+        \hline
+        $2^{-11}$ & $0.118912$ & $0.00196997$ \\
+        \hline
+        $2^{-12}$ & $0.117927$ & $0.000984952$ \\
+        \hline
+        $2^{-13}$ & $0.117435$ & $0.000492468$ \\
+        \hline
+        \dots & \dots & \dots \\
+        \hline
+        $2^{-50}$ & $0.0$ & $0.116942$ \\
+        \hline
+        $2^{-51}$ & $0.0$ & $0.116942$ \\
+        \hline
+        $2^{-52}$ & $-0.5$ & $0.616942$ \\
+        \hline
+        $2^{-53}$ & $0.0$ & $0.116942$ \\
+        \hline
+        $2^{-54}$ & $0.0$ & $0.116942$ \\
+        \hline
+    \end{tabular}
+    \caption{Przybliżone wartości pochodnej i błędy bezwzględne dla różnych $h$ (nowe dane)}
+    \label{tab:pochodna_new}
+\end{table}
+
+
 \end{document}

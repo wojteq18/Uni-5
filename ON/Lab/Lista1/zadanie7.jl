@@ -11,7 +11,7 @@ function real_derivative(x)
 end
 
 function f_prime()
-    for i in 1:54
+    for i in 0:54
         apx_res = approximate_derivative(f, 1, 2.0^(-i))
         real_res = real_derivative(1)
         difference = abs(real_res - apx_res)

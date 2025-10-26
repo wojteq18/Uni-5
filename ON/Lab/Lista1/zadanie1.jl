@@ -141,6 +141,12 @@ println("Our value:  ", our_value_eta64)
 real_value_eta64 = nextfloat(Float64(0.0))
 println("Real value: ", real_value_eta64)
 
+float_min_32 = floatmin(Float32)
+println("Float32 min value: ", float_min_32)
+
+float_min_64 = floatmin(Float64)
+println("Float64 min value: ", float_min_64)
+
 max_16 = max16()
 println("Our value:  ", max_16)
 
