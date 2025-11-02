@@ -33,62 +33,125 @@
     pdfauthor={Wojciech Typer},
 }
 
-\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 1}
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 2}
 \author{Wojciech Typer}
 
 \begin{document}
 \maketitle
 \section*{Zadanie 1}
 \begin{center}
-    \textbf{Cel zadania:} Wyznaczyć ograniczenie wartości x, aby obliczenie różnicy: $y = \sqrt{x^2 + 1} - 1$ powodowało zmniejszenie dokładności najwyżej o 2 bity
-\end{center}
-Do rozwiązania zadania użyję następującego twierdzenia z wykładu: 
-\begin{center}
-    Jeśli x i y są dodatnimi liczbami w dwójkowej arytmetyce fl, takimi, że x > y i $2^{-q} \leq 1 - \frac{y}{x} \leq 2^{-p}$, to obliczenie różnicy fl(x - y) powoduje utratę dokładności o co najmniej p bitów i co najwyżej q bitów.
-\end{center}
-W maszym przypadku: $x = \sqrt{x^2 + 1}$ oraz $y = 1$. Zatem:
-\begin{equation*}
-    2^{-q} \leq 1 - \frac{1}{\sqrt{x^2 + 1}} 
-\end{equation*}
-Po przekształceniach otrzymujemy:
-\begin{equation*}
-    \frac{1}{(1 - 2^{-q})^2} - 1 \leq x^2 
-\end{equation*}
-Podstawiając q = 2 (dla podwójnej precyzji) otrzymujemy:
-\begin{equation*}
-    \frac{1}{(1 - 2^{-2})^2} - 1 \leq x^2 
-\end{equation*}
-Zatem ostatecznie:
-\begin{equation*}
-    \sqrt{\frac{1}{(1 - 2^{-2})^2} - 1} \leq |x| 
-\end{equation*}
-Po obliczeniach otrzymujemy:
-\begin{equation*}
-    |x| \geq \sqrt{ \frac{7}{9} } \approx 0.8815
-\end{equation*}
-\textbf{Wnioski: } Jeżeli chcemy, aby obliczenie różnicy y = $\sqrt{x^2 + 1} - 1$ nie powodowało zmniejszenia dokładności o więcej niż 2 bity, to musimy mieć $|x| \geq \sqrt{ \frac{7}{9} } \approx 0.8815$.
+    \textbf{Cel zadania:} Celem zadania jest porównanie wyników z zadania 5 z Listy 1 oraz obecnych. W obydwu zadaniach obliczamy iloczyn skalarny tymi samymi metodami, jednak dane wejściowe w obydwu zadaniach nieco się różnią - sprawdzamy jak usunięcię dziesiątej cyfry po przecinku wpłynie na wyniki 
+\end{center}    
+\vspace{0.5cm}
+Wyniki z zadania 5 z Listy 1:
+\begin{table}[H]
+\centering
+\label{tab:sum_methods}
+\begin{tabular}{lllS[table-format=1.18e-1]} % 'S' z siunitx do wyrównania liczb
+\toprule
+\textbf{Liczba bitów} & \textbf{Metoda} & \textbf{Wynik} \\
+\midrule
+\addlinespace % Dodatkowa przestrzeń dla czytelności
+\multicolumn{3}{l}{\textbf{Precyzja 32-bitowa (\texttt{Float32})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                & -0.4999443 \\
+& Metoda 2     & -0.4543457 \\
+& Metoda 3      & -0.5 \\
+& Metoda 4      & -0.5 \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Precyzja 64-bitowa (\texttt{Float64})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                 & 1.0251881368296672e-10 \\
+& Metoda 2     & -1.5643308870494366e-10 \\
+& Metoda 3     & 0.0 \\
+& Metoda 4      & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table} 
+\vspace{0.5cm}
+Wyniki z obecnego zadania:
+\begin{table}[H]
+\centering
+\label{tab:sum_methods}
+\begin{tabular}{lllS[table-format=1.18e-1]} % 'S' z siunitx do wyrównania liczb
+\toprule
+\textbf{Liczba bitów} & \textbf{Metoda} & \textbf{Wynik} \\
+\midrule
+\addlinespace % Dodatkowa przestrzeń dla czytelności
+\multicolumn{3}{l}{\textbf{Precyzja 32-bitowa (\texttt{Float32})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                & -0.4999443 \\
+& Metoda 2     & -0.4543457 \\
+& Metoda 3      & -0.5 \\
+& Metoda 4      & -0.5 \\
+\addlinespace
+\multicolumn{3}{l}{\textbf{Precyzja 64-bitowa (\texttt{Float64})}} \\
+\cmidrule(r){1-3}
+& Metoda 1                 & -0.004296342739891585 \\
+& Metoda 2     & -0.004296342998713953 \\
+& Metoda 3     & -0.004296342842280865 \\
+& Metoda 4      & -0.004296342842280865 \\
+\bottomrule
+\end{tabular}
+\end{table} 
+\vspace{0.5cm}
+Użyte metody:
 
+\begin{description}
+    \item[\textbf{Metoda 1:}] Obliczanie "w przód":
+    \[ \sum_{i=1}^{n} x_i y_i \]
+
+    \item[\textbf{Metoda 2:}] Obliczanie "w tył":
+    \[ \sum_{i=n}^{1} x_i y_i \]
+
+    \item[\textbf{Metoda 3:}] Sumowanie osobno iloczynów dodatnich w porządku od największego do najmniejszego i osobno iloczynów ujemnych w porządku od najmniejszego do największego, a następnie dodanie obliczonych sum częściowych.
+
+    \item[\textbf{Metoda 4:}] Przeciwnie do metody 3.
+\end{description}
+%\vspace{0.1cm}
+\begin{center}
+    \textbf{Wnioski: } Zauważmy, że dla arytemtyki 32-bitowej wyniki nie uległy zmianie - wynika to ze zbyt małej precyzji tej arytmetyki. Dla arytmetyki 64-bitowej możemy zauważyć duże rozbieżności w uzyskanych wynikach, pomimo tego, że zmiana wektora x jest bardzo niewielka - możemy zatem wysnuć wnioski, że algorytmy, z których skorzystaliśmy są bardzo wrażliwe na zmiany danych, co z kolei świadczy o tym, że obliczenie iloczynu skalarnego $x \cdot y$ jest źle uwarunkowane.
+\end{center}
 \newpage
 \section*{Zadanie 2}
 \begin{center}
-    \textbf{Cel zadania:} Obliczyć, o ile bitów zmniejsza się dokładność różnicy $1 - cos(x)$ dla x = $\frac{1}{2}$
-\end{center}  
-Korzystając z twierdzenia użytego w poprzednim zadaniu:
-\begin{equation*}
-    2^{-q} \leq 1 - \frac{cos(x)}{1}
-\end{equation*}  
-Do rozwiązania powyższego równania użyjemy logarytmów o podstawie 2:
-\begin{equation*}
-    -q \approx log_2(1 - cos(x))
-\end{equation*}
-Przyjmijmy: $1 - cos(x) \approx 0.12241744$
-\begin{equation*}
-    -q \approx log_2(0.12241744)
-\end{equation*}
-Po obliczeniach otrzymujemy:
-\begin{equation*}
-    q \approx 3.0301
-\end{equation*}
-\textbf{Wnioski: } Obliczenie różnicy $1 - cos(x)$ dla x = $\frac{1}{2}$ powoduje zmniejszenie dokładności o około 3 bity.
-
+    \textbf{Cel zadania: } Narysowanie wykresu funkcji: $f(x) = e^{x} ln(1 + e ^{-x})$ w co najmniej dwóch programach do wizualizacji oraz policzenie granicy: $\lim_{x \to \infty} f(x)$ oraz porównanie uzyskanego wyniku z wykresem funkcji.
+\end{center}
+\begin{figure}[H] 
+    
+    \centering 
+    
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{chart1.png}
+    
+    \caption{Wykres 1, stworzony w programie Desmos.}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+\begin{figure}[H] 
+    
+    \centering 
+    
+    \includegraphics[width=1.0\textwidth, keepaspectratio]{chart2.png}
+    
+    \caption{Wykres 2, stworzony w programie Geogebra.}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+\vspace{0.2cm}
+Obliczmy teraz granicę funkcji $f(x) = e^{x} \ln(1 + e^{-x})$ przy $x$ dążącym do nieskończoności:
+\begin{align*}
+    \lim_{x \to \infty} e^{x} \ln(1 + e^{-x}) 
+    &= \lim_{x \to \infty} \frac{\ln(1 + e^{-x})}{e^{-x}} \\
+    &\overset{H}{=} \lim_{x \to \infty} \frac{\frac{d}{dx} \left( \ln(1 + e^{-x}) \right)}{\frac{d}{dx} \left( e^{-x} \right)} \\
+    &= \lim_{x \to \infty} \frac{\frac{1}{1 + e^{-x}} \cdot (-e^{-x})}{-e^{-x}} \\
+    &= \lim_{x \to \infty} \frac{1}{1 + e^{-x}} \\
+    &= \frac{1}{1 + 0} \\
+    &= 1
+\end{align*}
+\vspace{0.2cm}
+\begin{center}
+    \textbf{Wnioski: } Zauważmy, że obliczona granica nie pokrywa się z uzyskanymi wykresami funkcji. Na wykresach wartość funkcji zdaje się dążyć do zera wraz ze wzrostem wartości $x$. Dzieje się tak dlatego, że dla dużych wartości $x$ wyrażenie $ln(1 + e^{-x})$ jest bardzo małe i podczas obliczeń numerycznych jest zaokrąglane do zera co powoduje, że wartość funkcji $f(x)$ jest również zaokrąglana do zera. Czynnik $e^x$ dla dużych wartości x jest bardzo duży, a mnożenie liczb różniących się wielkością rzędów jest obarczone bardzo dużym błędem, przez co użyte programy graficzne pokazują błędne wyniki.
+\end{center}
+\newpage
+\section*{Zadanie 3}
 \end{document}
