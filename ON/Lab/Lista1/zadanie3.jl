@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 function one_two_bitstring()
     i = Float64(1.0)
     next_i = nextfloat(i)

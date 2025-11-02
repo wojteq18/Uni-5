@@ -1,4 +1,6 @@
-function method_one(x::Vector{T}, y::Vector{T}) where T<:AbstractFloat
+#Wojciech Typer
+
+function method_one(x::Vector{T}, y::Vector{T}) where T<:AbstractFloat #T<:AbstractFloat -> Funkcja działa dla Float16, Float32, Float64
     sum = zero(T)
     for i in 1:length(x)
         sum += x[i] * y[i]

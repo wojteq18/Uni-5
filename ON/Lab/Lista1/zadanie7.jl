@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 function f(x)
     return sin(x) + cos(3 * x)
 end    

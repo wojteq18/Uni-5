@@ -1,45 +1,47 @@
-function eps16()
-    kandydat1 = Float16(1.0)
+#Wojciech Typer
+
+function eps16() 
+    kandydat1 = Float16(1.0) 
     while Float16(1.0) + (kandydat1 / Float16(2.0)) > Float16(1.0)
         kandydat1 /= Float16(2.0)
     end
     return kandydat1
 end
 
-function eps32()
-    kandydat1 = Float32(1.0)
+function eps32() 
+    kandydat1 = Float32(1.0) 
     while Float32(1.0) + (kandydat1 / Float32(2.0)) > Float32(1.0)
         kandydat1 /= Float32(2.0)
     end
     return kandydat1
 end
 
-function eps64()
-    kandydat1 = Float64(1.0)
+function eps64() 
+    kandydat1 = Float64(1.0) 
     while Float64(1.0) + (kandydat1 / Float64(2.0)) > Float64(1.0)
         kandydat1 /= Float64(2.0)
     end
     return kandydat1
 end
 
-function eta16()
-    kandydat = Float16(1.0)
+function eta16() 
+    kandydat = Float16(1.0) 
     while kandydat / Float16(2.0) > Float16(0.0)
         kandydat /= Float16(2.0)
     end
     return kandydat
 end
 
-function eta32()
-    kandydat = Float32(1.0)
+function eta32() 
+    kandydat = Float32(1.0) 
     while kandydat / Float32(2.0) > Float32(0.0)
         kandydat /= Float32(2.0)
     end
     return kandydat
 end
 
-function eta64()
-    kandydat = Float64(1.0)
+function eta64() 
+    kandydat = Float64(1.0) 
     while kandydat / Float64(2.0) > Float64(0.0)
         kandydat /= Float64(2.0)
     end
@@ -47,15 +49,15 @@ function eta64()
 end
 
 function max16()
-    kandydat = Float16(1.0)
+    kandydat = Float16(1.0) 
     ostatni = Float16(1.0)
-    while !isinf(kandydat)
+    while !isinf(kandydat) 
         ostatni = kandydat
         kandydat *= Float16(2.0)
     end    
 
     krok = ostatni / Float16(2.0)
-    while krok > Float16(0.0)
+    while krok > Float16(0.0) 
         if !isinf(ostatni + krok)
             ostatni += krok
         end
@@ -64,7 +66,7 @@ function max16()
     return ostatni
 end
 
-function max32()
+function max32() 
     kandydat = Float32(1.0)
     ostatni = Float32(1.0)
     while !isinf(kandydat)
@@ -82,7 +84,7 @@ function max32()
     return ostatni
 end
 
-function max64()
+function max64() 
     kandydat = Float64(1.0)
     ostatni = Float64(1.0)
     while !isinf(kandydat)
@@ -100,7 +102,6 @@ function max64()
     return ostatni
 end
 
-    
 
 our_value16 = eps16()
 println("Our value:  ", our_value16)

@@ -1,0 +1,94 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{booktabs} % Lepsza jakość tabel
+\usepackage{graphicx}
+\usepackage{float}
+
+\usepackage{siunitx} 
+\sisetup{
+    output-exponent-marker = e,
+    bracket-numbers = false,
+    group-separator = {\,}, 
+    scientific-notation = true
+}
+
+% Inne
+\usepackage{hyperref} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Obliczenia Naukowe - Lista 1},
+    pdfauthor={Wojciech Typer},
+}
+
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 1}
+\author{Wojciech Typer}
+
+\begin{document}
+\maketitle
+\section*{Zadanie 1}
+\begin{center}
+    \textbf{Cel zadania:} Wyznaczyć ograniczenie wartości x, aby obliczenie różnicy: $y = \sqrt{x^2 + 1} - 1$ powodowało zmniejszenie dokładności najwyżej o 2 bity
+\end{center}
+Do rozwiązania zadania użyję następującego twierdzenia z wykładu: 
+\begin{center}
+    Jeśli x i y są dodatnimi liczbami w dwójkowej arytmetyce fl, takimi, że x > y i $2^{-q} \leq 1 - \frac{y}{x} \leq 2^{-p}$, to obliczenie różnicy fl(x - y) powoduje utratę dokładności o co najmniej p bitów i co najwyżej q bitów.
+\end{center}
+W maszym przypadku: $x = \sqrt{x^2 + 1}$ oraz $y = 1$. Zatem:
+\begin{equation*}
+    2^{-q} \leq 1 - \frac{1}{\sqrt{x^2 + 1}} 
+\end{equation*}
+Po przekształceniach otrzymujemy:
+\begin{equation*}
+    \frac{1}{(1 - 2^{-q})^2} - 1 \leq x^2 
+\end{equation*}
+Podstawiając q = 2 (dla podwójnej precyzji) otrzymujemy:
+\begin{equation*}
+    \frac{1}{(1 - 2^{-2})^2} - 1 \leq x^2 
+\end{equation*}
+Zatem ostatecznie:
+\begin{equation*}
+    \sqrt{\frac{1}{(1 - 2^{-2})^2} - 1} \leq |x| 
+\end{equation*}
+Po obliczeniach otrzymujemy:
+\begin{equation*}
+    |x| \geq \sqrt{ \frac{7}{9} } \approx 0.8815
+\end{equation*}
+\textbf{Wnioski: } Jeżeli chcemy, aby obliczenie różnicy y = $\sqrt{x^2 + 1} - 1$ nie powodowało zmniejszenia dokładności o więcej niż 2 bity, to musimy mieć $|x| \geq \sqrt{ \frac{7}{9} } \approx 0.8815$.
+
+\newpage
+\section*{Zadanie 2}
+\begin{center}
+    \textbf{Cel zadania:} Obliczyć, o ile bitów zmniejsza się dokładność różnicy $1 - cos(x)$ dla x = $\frac{1}{2}$
+\end{center}  
+Korzystając z twierdzenia użytego w poprzednim zadaniu:
+\begin{equation*}
+    2^{-q} \leq 1 - \frac{cos(x)}{1}
+\end{equation*}  
+Do rozwiązania powyższego równania użyjemy logarytmów o podstawie 2:
+\begin{equation*}
+    -q \approx log_2(1 - cos(x))
+\end{equation*}
+Przyjmijmy: $1 - cos(x) \approx 0.12241744$
+\begin{equation*}
+    -q \approx log_2(0.12241744)
+\end{equation*}
+Po obliczeniach otrzymujemy:
+\begin{equation*}
+    q \approx 3.0301
+\end{equation*}
+\textbf{Wnioski: } Obliczenie różnicy $1 - cos(x)$ dla x = $\frac{1}{2}$ powoduje zmniejszenie dokładności o około 3 bity.
+
+\end{document}

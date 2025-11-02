@@ -39,6 +39,9 @@
 \begin{document}
 \maketitle
 \section*{Zadanie 1}
+\begin{center}
+    Ta część zadania polegała na wyznaczeniu epsilona maszynowego 
+\end{center}
 
 \subsection{Epsilon maszynowy (\textit{macheps})}
 
@@ -67,6 +70,9 @@ Jak widać w tabeli \ref{tab:epsilon}, wartości uzyskane eksperymentalnie są z
 to możemy zauważyć następującą zależność: $\text{macheps} = 2 \cdot \epsilon$. %Oznacza to, że epsilon maszynowy jest dwukrotnością wartości $\epsilon$ definiowanej jako odległość między 1.0 a następną reprezentowalną liczbą maszynową.
 
 \subsection{Najmniejsza dodatnia liczba maszynowa (\textit{eta})}
+\begin{center}
+    W tym podpunkdzie należało iteracyjnie wyznaczyć liczbę eta - najmniejszej liczby maszynowej większej od 0 dla różnych typów
+\end{center}
 
 Liczba \textit{eta} (\(\eta\)) to najmniejsza dodatnia wartość, jaką można reprezentować w danym standardzie zmiennoprzecinkowym. Wartość ta jest związana z liczbami subnormalnymi (denormalizowanymi), które pozwalają na płynne "wypełnienie" luki między zerem a najmniejszą dodatnią liczbą znormalizowaną.
 
@@ -95,6 +101,9 @@ Wartości \textit{eta} wyznaczone iteracyjnie (poprzez dzielenie 1.0 przez 2 aż
 
 
 \subsection{Największa wartość skończona (\textit{MAX})}
+\begin{center}
+    W tej części zadania należało wyznaczyć maksymalną wartość zmiennoprzecinkową dla różnych typów
+\end{center}
 
 Liczba \textit{MAX} to największa skończona wartość, jaką można zapisać w danym typie zmiennoprzecinkowym. Próba reprezentacji liczby większej niż \textit{MAX} prowadzi do uzyskania wartości nieskończonej (\texttt{Inf}). Doświadczalne wyznaczenie tej wartości polega na iteracyjnym mnożeniu liczby przez 2, aż do momentu, gdy stanie się ona nieskończona, a następnie cofnięciu ostatniej operacji.
 
@@ -116,6 +125,9 @@ Jak widać w tabeli \ref{tab:max}, wartości uzyskane eksperymentalnie są zgodn
 
 
 \section*{Zadanie 2}
+\begin{center}
+    Celem tego zadania było wyznaczenie epsilona maszynowego za pomocą metody Kahana
+\end{center}
 W tabeli poniżej znajdują się wartości epsilona maszynowego, obliczone metodą Kahana i te, zwrócone przez funkcję \texttt{eps()} w Julii.
 \begin{table}[H]
 \centering
@@ -139,6 +151,10 @@ należy na wynik nałożyć wartość bezwzględną. Błędy w bicie znaku wynik
 \fussy % Przywróć domyślne ustawienia
 
 \section*{Zadanie 3}
+\begin{center}
+    Celem tego zadania było sprawdzenie hipotezy, czy liczby zmiennoprzecinkowe na przedziale \([1, 2]\) są rozmieszczone z jednakowym krokiem $\delta = 2^{-52}$.
+    Następnie należało wyznaczyć kroki dla przedziałów \([0.5, 1]\) oraz \([2, 4]\).
+\end{center}
 
 W zadaniu przeanalizowano rozkład liczb zmiennoprzecinkowych w arytmetyce \texttt{double} w różnych przedziałach. Gęstość rozmieszczenia tych liczb, czyli odległość między dwiema kolejnymi reprezentacjami, zależy od przedziału, w którym się znajdujemy. Sprawdzono to eksperymentalnie dla trzech przypadków.
 
@@ -152,6 +168,9 @@ W zadaniu przeanalizowano rozkład liczb zmiennoprzecinkowych w arytmetyce \text
 
 Powyższe eksperymenty potwierdzają, że w arytmetyce zmiennoprzecinkowej liczby są rozmieszczone gęściej bliżej zera i rzadziej w miarę oddalania się od niego. Zjawisko to nie jest przypadkowe, lecz wynika bezpośrednio ze sposobu, w jaki liczby są reprezentowane w formacie IEEE 754.
 \section*{Zadanie 4}
+\begin{center}
+    Celem zadania było wyznaczyć eksperymentalnie liczbę x w arytmetyce Float64 taką, że: $1 < x < 2$ oraz $fl(x \cdot fl(\frac{1}{x})) \neq 1$
+\end{center}
 \begin{itemize}
     \item Liczba znaleziona eksperymentalnie: 1.7935706239891005 - generujemy losową liczbę z przedziału \([1.0, 2.0]\) i sprawdzamy, czy $ x \cdot \frac{1}{x} \neq 1$. 
     \item Najmniejsza liczba z przedziału \([1.0, 2.0]\), dla której zachodzi \(x \cdot \frac{1}{x} \neq 1\) to 1.000000057228997. Iterujemy od 1.0 w górę, aż do momentu, gdy warunek będzie spełniony.
@@ -160,6 +179,9 @@ Powyższe eksperymenty potwierdzają, że w arytmetyce zmiennoprzecinkowej liczb
 \textbf{Wnioski: } Działania w arytmetyce zmiennopozycyjnej obarczone są błędem, który należy brać pod uwagę nawet podczas podstawowych operacji.
 
 \section*{Zadanie 5}
+\begin{center}
+    Celem zadania było obliczenie iloczynu skalarnego dwóch wektorów czterema różnymi metodami
+\end{center}
 
 W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektorów, aby zbadać ich stabilność numeryczną i wpływ na błędy zaokrągleń. Wyniki dla precyzji 32-bitowej (\texttt{Float32}) oraz 64-bitowej (\texttt{Float64}) przedstawiono w tabeli \ref{tab:sum_methods}. \\
 
@@ -175,15 +197,15 @@ W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektor
 \cmidrule(r){1-3}
 & Metoda 1                & -0.4999443 \\
 & Metoda 2     & -0.4543457 \\
-& Metoda 3      & 0.0 \\
-& Metoda 4      & 0.0 \\
+& Metoda 3      & -0.5 \\
+& Metoda 4      & -0.5 \\
 \addlinespace
 \multicolumn{3}{l}{\textbf{Precyzja 64-bitowa (\texttt{Float64})}} \\
 \cmidrule(r){1-3}
 & Metoda 1                 & 1.0251881368296672e-10 \\
 & Metoda 2     & -1.5643308870494366e-10 \\
-& Metoda 3     & -0.5 \\
-& Metoda 4      & -0.5 \\
+& Metoda 3     & 0.0 \\
+& Metoda 4      & 0.0 \\
 \bottomrule
 \end{tabular}
 \end{table} 
@@ -207,12 +229,20 @@ W zadaniu porównano cztery różne metody obliczania iloczynu skalarnego wektor
 \textbf{Wnioski:}
 \begin{itemize}
     \item Kolejność sumowania ma znaczenie, a wielkość błędu w poszczególnych metodach jest różna.
-    \item Dla precyzji 32-bitowej, metody 3 i 4 dają wynik najbliższy poprawnemu.
-    \item Dla precyzji 64-bitowej, najbardziej dokładny wynik daje metoda 2.
 \end{itemize}
 \noindent\rule{\textwidth}{0.4pt}
 
 \section*{Zadanie 6}
+\begin{center}
+\begin{minipage}{0.6\textwidth}
+Zadanie polegało na porównaniu dwóch funkcji matematycznych f i g, które są równoważne matematycznie:
+\begin{itemize}
+    \item $f(x) = \sqrt{x^{2} + 1} - 1$
+    \item $g(x) = \frac{x^{2}}{\sqrt{x^{2} + 1} + 1}$
+\end{itemize}
+\end{minipage}
+\end{center}
+
 \begin{table}[H]
 \centering
 \label{tab:methods_comparison_siunitx}
@@ -249,10 +279,13 @@ $x \rightarrow 0$ : $\sqrt{x^{2} + 1} \rightarrow 1$, zaś odejmowanie liczb bar
 W funkci g ten problem nie występuje, dzięki przekształceniu wyrażenia unikamy odejmowania.
 
 \section*{Zadanie 7}
+\begin{center}
+    Celem zadania było wyznaczenie numeryczne pochodnej funkcji $f(x) = sin(x) + cos(3x)$ w punkcie $x_0 = 1$ za pomocą wzoru:
+    $$\tilde{f}'(x) = \frac{f(x+h) - f(x)}{h}$$
+    dla różnych wartości h, oraz porównanie wyniku z dokładną wartością pochodnej.
+\end{center}
 \includegraphics[width=\textwidth]{/home/wojteq18/sem5/ON/Lab/Lista1/wykres.png}
-
 Dokładną wartość pochodnej możemy uzyskać obliczając: $\frac{d}{dx} sin(x) + cos (3x) = cos(x) - 3sin(3x)$
-
 Analizując otrzymane wyniki, widzimy, że początkowo wraz ze zmniejszeniem wartości h, błąd przybliżenia pochodnej maleje. Jednak od około $ h = 2^{-27}$ błąd zaczyna 
 rosnąć, wraz ze zmniejszaniem wartości h. Jest to spowodowane błędami zaokrągleń. Gdy h jest bardzo małe, różnica $f(x+h) - f(x)$ staje się bardzo mała i jest
 reprezentowana z ograniczoną precyzją w arytmetyce zmiennoprzecinkowej. 
@@ -293,6 +326,10 @@ reprezentowana z ograniczoną precyzją w arytmetyce zmiennoprzecinkowej.
         \hline
         \dots & \dots & \dots \\
         \hline
+        $2^{-28}$ & $0.116942$ & $4.803 \cdot 10^{-9}$ \\
+        \hline
+        \dots & \dots & \dots \\
+        \hline
         $2^{-50}$ & $0.0$ & $0.116942$ \\
         \hline
         $2^{-51}$ & $0.0$ & $0.116942$ \\
@@ -304,7 +341,7 @@ reprezentowana z ograniczoną precyzją w arytmetyce zmiennoprzecinkowej.
         $2^{-54}$ & $0.0$ & $0.116942$ \\
         \hline
     \end{tabular}
-    \caption{Przybliżone wartości pochodnej i błędy bezwzględne dla różnych $h$ (nowe dane)}
+    \caption{Przybliżone wartości pochodnej i błędy bezwzględne dla różnych $h$}. W tabelce również widać, że najbardziej dokładny wynik uzyskujemy dla $h = 2^{-28}$
     \label{tab:pochodna_new}
 \end{table}
 

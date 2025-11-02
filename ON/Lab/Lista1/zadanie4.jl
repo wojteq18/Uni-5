@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 function find_number() # subpoint a
     while true
         random_number = 1.0 + rand()
