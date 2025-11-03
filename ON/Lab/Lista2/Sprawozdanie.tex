@@ -154,4 +154,213 @@ Obliczmy teraz granicę funkcji $f(x) = e^{x} \ln(1 + e^{-x})$ przy $x$ dążąc
 \end{center}
 \newpage
 \section*{Zadanie 3}
+\begin{center}
+    \textbf{Cel zadania: } Rozwiązać układ równań liniowych postaci $Ax = b$ dla danej macierzy wspołczynników $A \in R^{n \times n}$ oraz wektora prawych stron $b \in R^{n}$, dwoma metodami: metodą eliminacji Gaussa, oraz metodą korzystającą wprost z równania $x = A^{-1}b$.
+    Macierz A ma być wygenerowana na dwa sposoby: jako macierz Hilberta oraz jako macierz losowa o zadanym uwarunkowaniu.
+\end{center}
+\begin{table}[H]
+    \centering
+    \caption{Porównanie błędów względnych dla macierzy Hilberta o rosnącym rozmiarze $n$}
+    \label{tab:hilbert_errors}
+    % Ustawienia dla pakietu siunitx do formatowania liczb
+    \sisetup{
+        round-mode = figures,
+        round-precision = 3,
+        scientific-notation = true
+    }
+    \begin{tabular}{c S[table-format=1.2e2] c S[table-format=1.2e2] S[table-format=1.2e2]}
+        \toprule
+        % Nagłówki kolumn
+        {$n$} & {cond(A)} & {rank(A)} & {$\frac{\|\mathbf{x} - \tilde{\mathbf{x}}_{\text{gauss}}\|}{\|\mathbf{x}\|}$} & {$\frac{\|\mathbf{x} - \tilde{\mathbf{x}}_{\text{inv}}\|}{\|\mathbf{x}\|}$} \\
+        \midrule
+        % Dane z Twoich wyników
+        1  & 1.0e0   & 1 & 0.0e0    & 0.0e0    \\
+        2  & 1.93e1  & 2 & 5.66e-16 & 1.40e-15 \\
+        3  & 5.24e2  & 3 & 8.02e-15 & 0.0e0    \\
+        4  & 1.55e4  & 4 & 4.14e-14 & 0.0e0    \\
+        5  & 4.77e5  & 5 & 1.68e-12 & 3.35e-12 \\
+        6  & 1.50e7  & 6 & 2.62e-10 & 2.02e-10 \\
+        7  & 4.75e8  & 7 & 1.26e-8  & 4.71e-9  \\
+        8  & 1.53e10 & 8 & 6.12e-8  & 3.08e-7  \\
+        9  & 4.93e11 & 9 & 3.88e-6  & 4.54e-6  \\
+        10 & 1.60e13 & 10& 8.67e-5  & 2.50e-4  \\
+        11 & 5.22e14 & 10& 1.58e-4  & 7.62e-3  \\
+        12 & 1.75e16 & 11& 1.34e-1  & 2.59e-1  \\
+        13 & 3.19e18 & 11& 1.10e-1  & 5.33e0   \\
+        14 & 6.20e17 & 11& 1.46e0   & 8.71e0   \\
+        15 & 3.68e17 & 12& 4.70e0   & 7.34e0   \\
+        16 & 7.05e17 & 12& 5.42e1   & 2.98e1   \\
+        17 & 1.25e18 & 12& 1.37e1   & 1.05e1   \\
+        18 & 2.25e18 & 12& 1.03e1   & 2.48e1   \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Porównanie błędów względnych dla losowych macierzy $R_n$ o zadanym wskaźniku uwarunkowania}
+    \label{tab:random_errors}
+    % Ustawienia dla pakietu siunitx
+    \sisetup{
+        round-mode = figures,
+        round-precision = 3,
+        scientific-notation = true
+    }
+    % POPRAWKA TUTAJ: Dodano @{\hspace{1.5em}} aby rozsunąć kolumny
+    \begin{tabular}{
+        S[table-format=1.0e1] @{\hspace{2.5em}}
+        c                     @{\hspace{2.5em}}
+        S[table-format=1.2e2] @{\hspace{2.5em}}
+        c                     @{\hspace{2.5em}}
+        S[table-format=1.2e-1] @{\hspace{2.5em}}
+        S[table-format=1.2e-1]
+    }
+        \toprule
+        % Nagłówki kolumn
+        {$c$} & {$n$} & {cond(A)} & {rank(A)} & {$\frac{\|\mathbf{x} - \tilde{\mathbf{x}}_{\text{gauss}}\|}{\|\mathbf{x}\|}$} & {$\frac{\|\mathbf{x} - \tilde{\mathbf{x}}_{\text{inv}}\|}{\|\mathbf{x}\|}$} \\
+        \midrule
+        % n = 
+        1e0   & 5 & 1.00e0  & 5 & 1.99e-16 & 1.40e-16 \\
+        1e1   & 5 & 1.00e1  & 5 & 1.40e-16 & 1.49e-16 \\
+        1e3   & 5 & 1.00e3  & 5 & 5.93e-14 & 5.90e-14 \\
+        1e7   & 5 & 1.00e7  & 5 & 3.37e-10 & 3.51e-10 \\
+        1e12  & 5 & 1.00e12 & 5 & 1.32e-5  & 1.35e-5  \\
+        1e16  & 5 & 8.26e15 & 4 & 1.66e-1  & 1.71e-1  \\
+        \midrule
+        % n = 10
+        1e0   & 10 & 1.00e0  & 10 & 2.67e-16 & 3.46e-16 \\
+        1e1   & 10 & 1.00e1  & 10 & 5.04e-16 & 3.29e-16 \\
+        1e3   & 10 & 1.00e3  & 10 & 1.52e-14 & 1.60e-14 \\
+        1e7   & 10 & 1.00e7  & 10 & 1.53e-10 & 1.24e-10 \\
+        1e12  & 10 & 1.00e12 & 10 & 1.74e-6  & 4.22e-6  \\
+        1e16  & 10 & 8.25e15 & 9  & 2.13e-1  & 2.86e-1  \\
+        \midrule
+        % n = 20
+        1e0   & 20 & 1.00e0  & 20 & 4.44e-16 & 4.82e-16 \\
+        1e1   & 20 & 1.00e1  & 20 & 3.24e-16 & 4.04e-16 \\
+        1e3   & 20 & 1.00e3  & 20 & 4.18e-15 & 4.62e-15 \\
+        1e7   & 20 & 1.00e7  & 20 & 3.35e-10 & 4.61e-10 \\
+        1e12  & 20 & 1.00e12 & 20 & 1.32e-5  & 1.04e-5  \\
+        1e16  & 20 & 8.31e15 & 19 & 5.17e-2  & 3.46e-2  \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\newpage
+\begin{center}
+    \textbf{Wnioski: } W przypadku macierzy Hilberta, wraz ze wzrostem $n$ rośnie jej wskaźnik uwarunkowania, co przekłada się na wzrost błędów względnych obu metod rozwiązywania układu równań.
+    Możemy z tego wywnioskować, że zadanie obliczenia układu równań z macierzą Hilberta jest źle uwarunkowane.
+    W przypadku macierzy losowych, możemy zauważyć, że błędy względne są znacznie bardziej zależne od zadanych wskaźników uwarunkowania $c$ niż od rozmiaru
+    macierzy $n$.
+    Gdy dowolna macierz ma wysoki wskaźnik uwarunkowania, to zadanie obliczenia układu równań z tą macierzą jest źle uwarunkowane.
+\end{center}  
+\section*{Zadanie 4}
+\begin{center}
+    \textbf{Cel zadania: } Dany jest wielomian P, będący naturalną postacią wielomianu Wilkinsona: $p(x) = \prod_{i=1}^{20} (x - i)$. Należy obliczyć: $|P(z_{k})|, |p(z_{k})| oraz |z_{k} - k|$
+    Następnie należy powtórzyć eksperyment Wilkinsona, tj. zmienić wpółczynik przy $x^{19} z -210$ na $-210 - 2^{-23}$ i opisać otrzymane wyniki
+\end{center}  
+
+\begin{table}[H]
+    \centering
+    \caption{Analiza błędów dla pierwiastków wielomianu Wilkinsona w jego nie zaburzonej reprezentacji numerycznej}
+    \label{tab:wilkinson_ideal}
+    
+    \sisetup{
+        scientific-notation = true,
+        round-mode = figures,
+        round-precision = 3
+    }
+    
+    \begin{tabular}{
+        c                   
+        c                   
+        S[table-format=1.4] 
+        S[table-format=1.2e+2] 
+        S[table-format=1.2e+2] 
+    }
+        \toprule
+        {$k$} & {$z_k$} & {$\lvert z_k - k \rvert$} & {$\lvert P(z_k) \rvert$} & {$\lvert p(z_k) \rvert$} \\
+        \midrule
+        
+        % POPRAWKA TUTAJ: Dodano nawiasy klamrowe {} wokół liczb w trzeciej kolumnie
+        1  & 1.0      & {0.0000} & 3.57e4 & 3.66e4 \\
+        2  & 2.0      & {0.0000} & 1.76e5 & 1.81e5 \\
+        3  & 3.0      & {0.0000} & 2.79e5 & 2.90e5 \\
+        4  & 4.0      & {0.0000} & 3.03e6 & 2.04e6 \\
+        5  & 5.0      & {0.0000} & 2.29e7 & 2.09e7 \\
+        6  & 6.0      & {0.0000} & 1.29e8 & 1.13e8 \\
+        7  & 7.0001   & {0.0001} & 4.81e8 & 4.57e8 \\
+        8  & 7.9994   & {0.0006} & 1.64e9 & 1.56e9 \\
+        9  & 9.0029   & {0.0029} & 4.88e9 & 4.69e9 \\
+        10 & 9.9904   & {0.0096} & 1.36e10 & 1.26e10 \\
+        11 & 11.025   & {0.0250} & 3.59e10 & 3.30e10 \\
+        12 & 11.9533  & {0.0467} & 7.53e10 & 7.39e10 \\
+        13 & 13.0743  & {0.0743} & 1.96e11 & 1.85e11 \\
+        14 & 13.9148  & {0.0852} & 3.58e11 & 3.55e11 \\
+        15 & 15.0755  & {0.0755} & 8.22e11 & 8.42e11 \\
+        16 & 15.9463  & {0.0537} & 1.55e12 & 1.57e12 \\
+        17 & 17.0254  & {0.0254} & 3.69e12 & 3.32e12 \\
+        18 & 17.9909  & {0.0091} & 7.65e12 & 6.34e12 \\
+        19 & 19.0019  & {0.0019} & 1.14e13 & 1.23e13 \\
+        20 & 19.9998  & {0.0002} & 2.79e13 & 2.32e13 \\
+        
+        \bottomrule
+    \end{tabular}
+\end{table}
+\newpage
+\begin{table}[H]
+    \centering
+    \caption{Analiza błędów dla pierwiastków zaburzonego wielomianu Wilkinsona}
+    \label{tab:wilkinson_perturbed}
+    
+    \sisetup{
+        output-complex-root = \text{i}, % Ustawia 'i' jako symbol części urojonej
+        complex-root-position = after-number,
+        scientific-notation = true,
+        round-mode = figures,
+        round-precision = 3
+    }
+    
+    \begin{tabular}{
+        c                 % Kolumna k
+        c                 % Kolumna zk (ręcznie, bo zespolone)
+        S[table-format=1.4] % Kolumna |zk - k|
+        S[table-format=1.2e+2] % Kolumna |P(zk)|
+        S[table-format=1.2e+2] % Kolumna |p(zk)|
+    }
+        \toprule
+        {$k$} & {Przybliżony $z_k$} & {$\lvert z_k - k \rvert$} & {$\lvert P(z_k) \rvert$} & {$\lvert p(z_k) \rvert$} \\
+        \midrule
+        
+        1  & 1.0                  & {0.0000} & 2.03e4 & 2.00e4 \\
+        2  & 2.0                  & {0.0000} & 3.47e5 & 3.52e5 \\
+        3  & 3.0                  & {0.0000} & 2.26e6 & 2.42e6 \\
+        4  & 4.0                  & {0.0000} & 1.05e7 & 1.13e7 \\
+        5  & 5.0                  & {0.0000} & 3.76e7 & 4.48e7 \\
+        6  & 6.0                  & {0.0000} & 1.31e8 & 2.14e8 \\
+        7  & 6.9996               & {0.0004} & 3.94e8 & 1.78e9 \\
+        8  & 8.0078               & {0.0078} & 1.18e9 & 1.87e10 \\
+        9  & 8.9158               & {0.0842} & 2.23e9 & 1.37e11 \\
+        10 & 10.0955 - 0.6449i    & {0.6520} & 1.07e10 & 1.49e12 \\
+        11 & 10.0955 + 0.6449i    & {1.1109} & 1.07e10 & 1.49e12 \\
+        12 & 11.7939 - 1.6525i    & {1.6653} & 3.14e10 & 3.30e13 \\
+        13 & 11.7939 + 1.6525i    & {2.0458} & 3.14e10 & 3.30e13 \\
+        14 & 13.9924 - 2.5188i    & {2.5188} & 2.16e11 & 9.55e14 \\
+        15 & 13.9924 + 2.5188i    & {2.7129} & 2.16e11 & 9.55e14 \\
+        16 & 16.7307 - 2.8126i    & {2.9060} & 4.85e11 & 2.74e16 \\
+        17 & 16.7307 + 2.8126i    & {2.8255} & 4.85e11 & 2.74e16 \\
+        18 & 19.5024 - 1.9403i    & {2.4540} & 4.56e12 & 4.25e17 \\
+        19 & 19.5024 + 1.9403i    & {2.0043} & 4.56e12 & 4.25e17 \\
+        20 & 20.8469              & {0.8469} & 8.76e12 & 1.37e18 \\
+        
+        \bottomrule
+    \end{tabular}
+\end{table}
+\begin{center}
+    \textbf{Wnioski: } W przypadku nie zaburzonego wielomianu Wilkinsona, możemy zauważyć, że wyliczone pierwiastki nie pokrywają się z rzeczywistymi wartościami, 
+    jednak błędy bezwzględne są stosunkowo niewielkie. Niemniej, wartości wielomianu (zarówno w jego naturalnej jak i oryginalnej formie) w tych punktach
+    są bardzo duże i rosną wraz ze wzrostem wartości k. Dzieje się tak, ponieważ wyliczenie pierwiastków w wielomianie Wilkinsona jest ekstrymalnie źle uwarunkowane.
+
+    W przypadku zaburzonego wielomianu Wilkinsona, sytuacja jest jeszcze gorsza - błędy bezwzględne pierwiastków są znacznie większe, a dodatkowo pojawiają się
+    pierwiastki zespolone. Wszystkie te błędy wynikają z faktu, że jesteśmy zmuszni pracowac w arytmetyce z ograniczoną precyzją, a wielomian Wilkinsona jest przykładem wielomianu, którego pierwiastki są bardzo wrażliwe na nawet niewielkie zmiany współczynników.
+\end{center}
 \end{document}
