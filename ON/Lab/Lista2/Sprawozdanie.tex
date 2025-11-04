@@ -363,4 +363,199 @@ Obliczmy teraz granicę funkcji $f(x) = e^{x} \ln(1 + e^{-x})$ przy $x$ dążąc
     W przypadku zaburzonego wielomianu Wilkinsona, sytuacja jest jeszcze gorsza - błędy bezwzględne pierwiastków są znacznie większe, a dodatkowo pojawiają się
     pierwiastki zespolone. Wszystkie te błędy wynikają z faktu, że jesteśmy zmuszni pracowac w arytmetyce z ograniczoną precyzją, a wielomian Wilkinsona jest przykładem wielomianu, którego pierwiastki są bardzo wrażliwe na nawet niewielkie zmiany współczynników.
 \end{center}
+\newpage
+\section*{Zadanie 5}
+\begin{center}
+    \textbf{Cel zadania: } Rozpatrujemy następujące równanie rekurencyjne: $p_{n+1} = p_n + rp_n(1 - p_n)$, gdzie $r$ jest pewną stałą, $r(1 - p_n)$ jest czynnikiem wzrostu populacji
+    a $p_0$ jest wielkością populacji, stanowiącą procent maksymalnej wielkości populacji dla danego stanu środowiska.
+    W zadaniu należy przeprowadzić 40 iteracji dla $p_0 = 0.01$ i $r = 3$ w arytmetyce float32, następnie ponownie wykonać 40 iteracji, z niewielką modyfikacją,
+    tj. wykonać 10 iteracji, zatrzymać, zastosować obcięcie wyniku, odrzucając cyfry po 3 miejscu po przecinku i kontynuować kolejne 30 iteracji. Należy porównać oba wyniki.
+    Następnie należy wykonać kolejnych 40 iteracji dla danych $p_0 = 0.01$ i $r = 3$ w arytmetyce float32 i float64.
+\end{center}
+\begin{table}[H]
+    \centering
+    \caption{Wyniki 40 iteracji dla modelu logistycznego z $p_0=0.01$ i $r=3$}
+    \label{tab:logistic_40_steps}
+        % Ustawienia lokalne, aby uniknąć problemów z globalną konfiguracją
+    \sisetup{
+        scientific-notation = false, % Wyłączamy notację naukową
+        table-format = 1.19        % Format: 1 cyfra przed, do 19 po przecinku
+    }
+    \begin{tabular}{
+        |c|c| % Kolumna dla numeru iteracji
+    }
+        \toprule
+        {Numer iteracji ($n$)} & {Wartość $p_n$} \\
+        \midrule
+        1  & 0.0397 \\
+        2  & \num{0.15407173} \\
+        3  & \num{0.5450726} \\
+        4  & \num{1.2889781} \\
+        5  & \num{0.1715188} \\
+        6  & \num{0.5978191} \\
+        7  & \num{1.3191134} \\
+        8  & \num{0.056273222} \\
+        9  & \num{0.21559286} \\
+        10 & \num{0.7229306} \\
+        11 & \num{1.3238364} \\
+        12 & \num{0.037716985} \\
+        13 & \num{0.14660022} \\  
+        14 & \num{0.521926} \\ 
+        15 & \num{1.2704837} \\ 
+        16 & \num{0.2395482} \\ 
+        17 & \num{0.7860428} \\
+        18 & \num{1.2905813} \\
+        19 & \num{0.16552472} \\
+        20 & \num{0.5799036} \\
+        21 & \num{1.3107498} \\
+        22 & \num{0.088804245} \\
+        23 & \num{0.3315584} \\
+        24 & \num{0.9964407} \\
+        25 & \num{1.0070806} \\
+        26 & \num{0.9856885} \\
+        27 & \num{1.0280086} \\
+        28 & \num{0.9416294} \\
+        29 & \num{1.1065198} \\
+        30 & \num{0.7529209} \\
+        31 & \num{1.3110139} \\
+        32 & \num{0.0877831} \\
+        33 & \num{0.3280148} \\
+        34 & \num{0.9892781} \\
+        35 & \num{1.021099} \\
+        36 & \num{0.95646656} \\
+        37 & \num{1.0813814} \\
+        38 & \num{0.81736827} \\
+        39 & \num{1.2652004} \\
+        40 & \num{0.25860548} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\newpage
+
+\begin{table}[H]
+    \centering
+    \caption{Wyniki 40 iteracji dla modelu logistycznego z $p_0=0.01$ i $r=3$, z obcięciem po 10 iteracjach}
+    \label{tab:logistic_40_steps}
+        % Ustawienia lokalne, aby uniknąć problemów z globalną konfiguracją
+    \sisetup{
+        scientific-notation = false, % Wyłączamy notację naukową
+        table-format = 1.19        % Format: 1 cyfra przed, do 19 po przecinku
+    }
+    \begin{tabular}{
+        |c|c| % Kolumna dla numeru iteracji
+    }
+        \toprule
+        {Numer iteracji ($n$)} & {Wartość $p_n$} \\
+        \midrule
+        1  & 0.0397 \\
+        2  & \num{0.15407173} \\
+        3  & \num{0.5450726} \\
+        4  & \num{1.2889781} \\
+        5  & \num{0.1715188} \\
+        6  & \num{0.5978191} \\
+        7  & \num{1.3191134} \\
+        8  & \num{0.056273222} \\
+        9  & \num{0.21559286} \\
+        10 & \num{0.7229306} \\
+        \textbf{10} & \textbf{0.722} \\ % Obcięcie do 3 miejsc po przecinku
+        11 & \num{1.3241479} \\
+        12 & \num{0.036488414} \\
+        13 & \num{0.14195944} \\  
+        14 & \num{0.50738037} \\ 
+        15 & \num{1.2572169} \\ 
+        16 & \num{0.28708452} \\ 
+        17 & \num{0.9010855} \\
+        18 & \num{1.1684768} \\
+        19 & \num{0.577893} \\
+        20 & \num{1.3096911} \\
+        21 & \num{0.09289217} \\
+        22 & \num{0.34568182} \\
+        23 & \num{1.0242395} \\
+        24 & \num{0.94975823} \\
+        25 & \num{1.0929108} \\
+        26 & \num{0.7882812} \\
+        27 & \num{1.2889631} \\
+        28 & \num{0.17157483} \\
+        29 & \num{0.59798557} \\
+        30 & \num{1.3191822} \\
+        31 & \num{0.05600393} \\
+        32 & \num{0.21460639} \\
+        33 & \num{0.7202578} \\
+        34 & \num{1.3247173} \\
+        35 & \num{0.034241438} \\
+        36 & \num{0.13344833} \\
+        37 & \num{0.48036796} \\
+        38 & \num{1.2292118} \\
+        39 & \num{0.3839622} \\
+        40 & \num{1.093568} \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Wyniki 40 iteracji dla modelu logistycznego w arytmetyce Float64}
+    \label{tab:logistic_new_data}
+    
+    % Ustawienia lokalne, aby uniknąć problemów z globalną konfiguracją
+    \sisetup{
+        scientific-notation = false, % Wyłączamy notację naukową
+        table-format = 1.19        % Format: 1 cyfra przed, do 19 po przecinku
+    }
+    
+    \begin{tabular}{
+        |c|c|
+    }
+        \toprule
+        {Numer iteracji ($n$)} & {Wartość $p_n$} \\
+        \midrule
+        1  & 0.0397 \\
+        2  & 0.15407173000000002 \\
+        3  & 0.5450726260444213 \\
+        4  & 1.2889780011888006 \\
+        5  & 0.17151914210917552 \\
+        6  & 0.5978201201070994 \\
+        7  & 1.3191137924137974 \\
+        8  & 0.056271577646256565 \\
+        9  & 0.21558683923263022 \\
+        10 & 0.722914301179573 \\
+        11 & 1.3238419441684408 \\
+        12 & 0.03769529725473175 \\
+        13 & 0.14651838271355924 \\
+        14 & 0.521670621435246 \\
+        15 & 1.2702617739350768 \\
+        16 & 0.24035217277824272 \\
+        17 & 0.7881011902353041 \\
+        18 & 1.2890943027903075 \\
+        19 & 0.17108484670194324 \\
+        20 & 0.5965293124946907 \\
+        21 & 1.3185755879825978 \\
+        22 & 0.058377608259430724 \\
+        23 & 0.22328659759944824 \\
+        24 & 0.7435756763951792 \\
+        25 & 1.315588346001072 \\
+        26 & 0.07003529560277899 \\
+        27 & 0.26542635452061003 \\
+        28 & 0.8503519690601384 \\
+        29 & 1.2321124623871897 \\
+        30 & 0.37414648963928676 \\
+        31 & 1.0766291714289444 \\
+        32 & 0.8291255674004515 \\
+        33 & 1.2541546500504441 \\
+        34 & 0.29790694147232066 \\
+        35 & 0.9253821285571046 \\
+        36 & 1.1325322626697856 \\
+        37 & 0.6822410727153098 \\
+        38 & 1.3326056469620293 \\
+        39 & 0.0029091569028512065 \\
+        40 & 0.011611238029748606 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{center}
+    \textbf{Wnioski: } W przypadku arytmetyki Float32 widzimy, że obcięcie wartości po 10 iteracjach prowadzi do znacznie różnych wyników końcowych.
+    Oznacza to, że model logistyczny jest bardzo wrażliwy na dokładność obliczeń, a nawet niewielkie zmiany mogą prowadzić do znacznych różnic w wynikach.
+\end{center}
 \end{document}
