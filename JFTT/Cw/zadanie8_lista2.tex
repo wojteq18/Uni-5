@@ -1,0 +1,73 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+
+
+
+
+\title{Języki Formalne i Techniki Translacji}
+\author{Wojciech Typer 279730}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Zadanie 8 Lista 2}
+\begin{center}
+    Udowodnij, że klasa języków regularnych jest zamknięta na operację różnicy (zbiorów)
+\end{center}
+Chcemy udowodnić, że jeżeli języki $L_1 i L_2$ są regularne, to język $L_1 - L_2$ (rozumiany jako różnica zbiorów) też jest regularny. \\
+Podstawą naszego dowodu będzie tożsamość z teorii zbiorów: $L_1 - L_2 = L_1 \cap \overline{L_2}$, gdzie $\overline{L_2}$ oznacza dopełnienie języka $L_2$, 
+czyli zbiór wszystkich słów nad alfabetem języka $L_2$, które nie należą do $L_2$. \\
+Teraz musimy udowodnić: 
+\begin{itemize}
+    \item Jeśli język $L_2$ jest regularny, to jego dopełnienie $\overline{L_2}$ też jest regularne. 
+    \item Jeśli $L_1 i \overline{L_2}$ są regularne, to ich przecięcie $L_1 \cap \overline{L_2}$ też jest regularne.
+\end{itemize}
+\textbf{Dowód: Jeśli język $L_2$ jest regularny, to jego dopełnienie $\overline{L_2}$ też jest regularne} \\
+Skoro język $L_2$ jest regularny, to istnieje dla niego automat skończony deterministyczny (DFA) $M = (Q, \Sigma, \delta, q_0, F)$, który go rozpoznaje.
+Automat M akceptuje słowo $w$ wtedy i tylko wtedy, gdy po przetworzeniu w kończy w jednym ze stanów akceptujących z $F$. \\
+Żeby skonstruować automat rozpoznający dopełnienie języka $L_2$, wystarczy zamienić stany akceptujące na nieakceptujące i odwrotnie:
+\begin{center}
+    $M_2 = (Q, \Sigma, \delta, q_0, \overline{F})$
+\end{center}
+gdzie $\overline{F} = Q - F$ \\
+W ten sposób udało się nam skonstruować automat $M_2$, który akceptuje słowo $w$ wtedy i tylko wtedy, gdy $M$ go nie akceptuje, czyli dokładnie wtedy, gdy $w$ należy do dopełnienia języka $L_2$. \\
+Zatem $\overline{L_2}$ jest regularny. \\
+\textbf{Dowód: Jeśli $L_1 i \overline{L_2}$ są regularne, to ich przecięcie $L_1 \cap \overline{L_2}$ też jest regularne.} \\
+Skoro języki $L_1$ i $\overline{L_2}$ są regularne, to istnieją dla nich automaty skończone deterministyczne. \\
+Niech:
+\begin{itemize}
+    \item $M_1 = (Q_1, \Sigma, \delta_1, q_{0_1}, F_1)$ - automat rozpoznający język $L_1$
+    \item $M_2 = (Q_2, \Sigma, \delta_2, q_{0_2}, F_2)$ - automat rozpoznający język $\overline{L_2}$
+\end{itemize}
+Teraz skonstruujmy automat, który będzie akceptował słowa należące do $L_1 \cap \overline{L_2}$. \\
+Nazwijmy ten automat jako $M_p$ i zdefiniujmy go następująco:
+\begin{center}
+    $M_p = (Q_p, \Sigma, \delta_p, q_{p_0}, F_p)$, gdzie:
+\end{center}
+\begin{itemize}
+    \item $Q_p$ to iloczyn kartezjański stanów z automatów $M_1$ i $M_2$: $Q_p = Q_1 \times Q_2$
+    \item Alfabet $\Sigma$ pozostaje ten sam
+    \item Funkcja przejścia $\delta_p$ dla każdego stanu $(q_1, q_2)$ i symbolu $a \in \Sigma$, nowe przejście jest zdefiniowane jako: $\delta_p((q_1, q_2), a) = (\delta_1(q_1, a), \delta_2(q_2, a))$
+    \item Stan początkowy $q_{p_0}$ to para stanów początkowych z automatów $M_1$ i $M_2$: $q_{p_0} = (q_{0_1}, q_{0_2})$
+    \item Zbiór stanów akceptujących $F_p$: Słowo należy do przecięcia wtedy i tylko wtedy, gdy jest akceptowane przez oba automaty. Dlatego stan w automacie $M_p$ jest akceptujący, gdy oba stany w parze są akceptujące: $F_p = F_1 \times F_2 = \{(q_1, q_2) | q_1 \in F_1 \text{ i } q_2 \in F_2\}$ 
+\end{itemize}
+Skonstruowaliśmy automat $M_p$, co dowodzi, że przecięcie języków regularnych $L_1$ i $\overline{L_2}$ jest również językiem regularnym. \\
+\end{document}
