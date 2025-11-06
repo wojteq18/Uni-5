@@ -13,6 +13,8 @@
 \usepackage{booktabs} % Lepsza jakość tabel
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{longtable}  % Dla tabel wielostronicowych
+
 
 \usepackage{siunitx} 
 \sisetup{
@@ -557,5 +559,209 @@ Obliczmy teraz granicę funkcji $f(x) = e^{x} \ln(1 + e^{-x})$ przy $x$ dążąc
 \begin{center}
     \textbf{Wnioski: } W przypadku arytmetyki Float32 widzimy, że obcięcie wartości po 10 iteracjach prowadzi do znacznie różnych wyników końcowych.
     Oznacza to, że model logistyczny jest bardzo wrażliwy na dokładność obliczeń, a nawet niewielkie zmiany mogą prowadzić do znacznych różnic w wynikach.
+    Porównując wyniki uzyskane w arytmetyce Float32 i Float64, widzimy, że są one znacznie różne, co podkreśla wpływ precyzji obliczeń na dynamikę modelu.
+\end{center}
+\newpage
+\section*{Zadanie 6}
+\begin{center}
+    \textbf{Cel zadania: } Rozważamy równanie rekurencyjne: $x_{n+1} = x_n^2 + c$, gdzie $c$ jest pewną stałą, a $x_0$ jest punktem startowym.
+    Należy przeprowadzić po 40 iteracji dla następujących par: $(c, x_0) = (-2, 1), (-2, 2), (-2, 1.99999999999999), (-1, 1), (-1, -1), (-1, 0.75), (-1, 0.25)$ w arytmetyce Float64
+\end{center} 
+\begin{longtable}{cccc}
+\caption{Porównanie przebiegu iteracji dla $c = -2$ i różnych wartości początkowych $x_0$} \label{tab:porownanie} \\
+\toprule
+\textbf{Krok (n)} & \textbf{$x_n$ (dla $x_0 = 1$)} & \textbf{$x_n$ (dla $x_0 = 2$)} & \textbf{$x_n$ (dla $x_0 \approx 2$)} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{c}%
+{{\tablename\ \thetable{} -- ciąg dalszy}} \\
+\toprule
+\textbf{Krok (n)} & \textbf{$x_n$ (dla $x_0 = 1$)} & \textbf{$x_n$ (dla $x_0 = 2$)} & \textbf{$x_n$ (dla $x_0 \approx 2$)} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1  & -1.0 & 2.0 & 1.99999999999996 \\
+2  & -1.0 & 2.0 & 1.9999999999998401 \\
+3  & -1.0 & 2.0 & 1.9999999999993605 \\
+4  & -1.0 & 2.0 & 1.999999999997442 \\
+5  & -1.0 & 2.0 & 1.9999999999897682 \\
+6  & -1.0 & 2.0 & 1.9999999999590727 \\
+7  & -1.0 & 2.0 & 1.999999999836291 \\
+8  & -1.0 & 2.0 & 1.9999999993451638 \\
+9  & -1.0 & 2.0 & 1.9999999973806553 \\
+10 & -1.0 & 2.0 & 1.999999989522621 \\
+11 & -1.0 & 2.0 & 1.9999999580904841 \\
+12 & -1.0 & 2.0 & 1.9999998323619383 \\
+13 & -1.0 & 2.0 & 1.9999993294477814 \\
+14 & -1.0 & 2.0 & 1.9999973177915749 \\
+15 & -1.0 & 2.0 & 1.9999892711734937 \\
+16 & -1.0 & 2.0 & 1.9999570848090826 \\
+17 & -1.0 & 2.0 & 1.999828341078044 \\
+18 & -1.0 & 2.0 & 1.9993133937789613 \\
+19 & -1.0 & 2.0 & 1.9972540465439481 \\
+20 & -1.0 & 2.0 & 1.9890237264361752 \\
+21 & -1.0 & 2.0 & 1.9562153843260486 \\
+22 & -1.0 & 2.0 & 1.82677862987391 \\
+23 & -1.0 & 2.0 & 1.3371201625639997 \\
+24 & -1.0 & 2.0 & -0.21210967086482313 \\
+25 & -1.0 & 2.0 & -1.9550094875256163 \\
+26 & -1.0 & 2.0 & 1.822062096315173 \\
+27 & -1.0 & 2.0 & 1.319910282828443 \\
+28 & -1.0 & 2.0 & -0.2578368452837396 \\
+29 & -1.0 & 2.0 & -1.9335201612141288 \\
+30 & -1.0 & 2.0 & 1.7385002138215109 \\
+31 & -1.0 & 2.0 & 1.0223829934574389 \\
+32 & -1.0 & 2.0 & -0.9547330146890065 \\
+33 & -1.0 & 2.0 & -1.0884848706628412 \\
+34 & -1.0 & 2.0 & -0.8152006863380978 \\
+35 & -1.0 & 2.0 & -1.3354478409938944 \\
+36 & -1.0 & 2.0 & -0.21657906398474625 \\
+37 & -1.0 & 2.0 & -1.953093509043491 \\
+38 & -1.0 & 2.0 & 1.8145742550678174 \\
+39 & -1.0 & 2.0 & 1.2926797271549244 \\
+40 & -1.0 & 2.0 & -0.3289791230026702 \\
+\end{longtable}  
+\newpage
+\begin{longtable}{ccccc}
+\caption{Porównanie przebiegu iteracji dla $c = -1$ i różnych wartości początkowych $x_0$} \label{tab:porownanie_c-1} \\
+\toprule
+\textbf{Krok (n)} & \textbf{$x_n$ (dla $x_0 = 1$)} & \textbf{$x_n$ (dla $x_0 = -1$)} & \textbf{$x_n$ (dla $x_0 = 0.75$)} & \textbf{$x_n$ (dla $x_0 = 0.25$)} \\
+\midrule
+\endfirsthead
+\multicolumn{5}{c}%
+{{\tablename\ \thetable{} -- ciąg dalszy}} \\
+\toprule
+\textbf{Krok (n)} & \textbf{$x_n$ (dla $x_0 = 1$)} & \textbf{$x_n$ (dla $x_0 = -1$)} & \textbf{$x_n$ (dla $x_0 = 0.75$)} & \textbf{$x_n$ (dla $x_0 = 0.25$)} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1  & 0.0 & 0.0 & -0.4375 & -0.9375 \\
+2  & -1.0 & -1.0 & -0.80859375 & -0.12109375 \\
+3  & 0.0 & 0.0 & -0.34617614 & -0.98533630 \\
+4  & -1.0 & -1.0 & -0.88016207 & -0.02911237 \\
+5  & 0.0 & 0.0 & -0.22531472 & -0.99915247 \\
+6  & -1.0 & -1.0 & -0.94923328 & -0.00169434 \\
+7  & 0.0 & 0.0 & -0.09895619 & -0.99999713 \\
+8  & -1.0 & -1.0 & -0.99020767 & -5.741e-06 \\
+9  & 0.0 & 0.0 & -0.01948876 & -1.0 \\
+10 & -1.0 & -1.0 & -0.99962019 & 0.0 \\
+11 & 0.0 & 0.0 & -0.00075948 & -1.0 \\
+12 & -1.0 & -1.0 & -0.99999942 & 0.0 \\
+13 & 0.0 & 0.0 & -1.154e-06 & -1.0 \\
+14 & -1.0 & -1.0 & -1.0 & 0.0 \\
+15 & 0.0 & 0.0 & 0.0 & -1.0 \\
+16 & -1.0 & -1.0 & -1.0 & 0.0 \\
+17 & 0.0 & 0.0 & 0.0 & -1.0 \\
+18 & -1.0 & -1.0 & -1.0 & 0.0 \\
+19 & 0.0 & 0.0 & 0.0 & -1.0 \\
+20 & -1.0 & -1.0 & -1.0 & 0.0 \\
+21 & 0.0 & 0.0 & 0.0 & -1.0 \\
+22 & -1.0 & -1.0 & -1.0 & 0.0 \\
+23 & 0.0 & 0.0 & 0.0 & -1.0 \\
+24 & -1.0 & -1.0 & -1.0 & 0.0 \\
+25 & 0.0 & 0.0 & 0.0 & -1.0 \\
+26 & -1.0 & -1.0 & -1.0 & 0.0 \\
+27 & 0.0 & 0.0 & 0.0 & -1.0 \\
+28 & -1.0 & -1.0 & -1.0 & 0.0 \\
+29 & 0.0 & 0.0 & 0.0 & -1.0 \\
+30 & -1.0 & -1.0 & -1.0 & 0.0 \\
+31 & 0.0 & 0.0 & 0.0 & -1.0 \\
+32 & -1.0 & -1.0 & -1.0 & 0.0 \\
+33 & 0.0 & 0.0 & 0.0 & -1.0 \\
+34 & -1.0 & -1.0 & -1.0 & 0.0 \\
+35 & 0.0 & 0.0 & 0.0 & -1.0 \\
+36 & -1.0 & -1.0 & -1.0 & 0.0 \\
+37 & 0.0 & 0.0 & 0.0 & -1.0 \\
+38 & -1.0 & -1.0 & -1.0 & 0.0 \\
+39 & 0.0 & 0.0 & 0.0 & -1.0 \\
+40 & -1.0 & -1.0 & -1.0 & 0.0 \\
+\end{longtable}
+\newpage
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/1.png}
+
+    \caption{Wykres dla podpunktu 1}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/2.png}
+
+    \caption{Wykres dla podpunktu 2}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/3.png}
+
+    \caption{Wykres dla podpunktu 3}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/4.png}
+
+    \caption{Wykres dla podpunktu 4}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/5.png}
+
+    \caption{Wykres dla podpunktu 5}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/6.png}
+
+    \caption{Wykres dla podpunktu 6}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.8\textwidth, keepaspectratio]{on_charts/7.png}
+
+    \caption{Wykres dla podpunktu 7}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{center}
+    \textbf{Wnioski: } Dla podpunktu 1 i 2 widzimy, że kolejne iteracje nie wpływają na zmianę wartości - pozostają one stałe.
+    Graficzne iteracje dla tych przypadków prowadzą do zachowania stabilnego.
+    Dla podpunktu 3, pomimo bardzo dużego podobieństwa do podpunktu 2, widzimy, że uzyskane wartości są znacznie różne - wraz z kolejnymi iteracjami 
+    wartości zdają się coraz bardziej odbiegać od początkowej wartości.
+    Dla kolejnych podpunktów, gdzie stała $c$ jest równa -1 widzimy, że wraz z kolejnymi iteracjami, uzyskiwane wyniki zaczynają się stabilizować,
+    wchodząc w cykl (0 , -1). Wartość $x_0$ w tym wypadku decyduje tylko o tym, jak szybko osiągnięty zostanie ten cykl.
 \end{center}
 \end{document}
