@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 function receq(n::Int, c::Int, x0::Float64)
     start_value = x0
     for i in 1:n

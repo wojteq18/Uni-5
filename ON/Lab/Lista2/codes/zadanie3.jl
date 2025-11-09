@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 using LinearAlgebra
 
 function hilb(n::Int)

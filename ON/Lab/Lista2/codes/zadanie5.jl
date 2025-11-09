@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 function receq(n::Int, p0, r)
     p = p0 
     for i in 1:n

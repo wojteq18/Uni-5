@@ -1,3 +1,5 @@
+#Wojciech Typer
+
 using Polynomials
 using Printf 
 
