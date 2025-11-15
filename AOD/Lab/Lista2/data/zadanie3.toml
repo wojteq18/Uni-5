@@ -1,0 +1,8 @@
+c = [6000, 4000, 8000, 9000] #koszt jednostki w danym okresie
+o = [8000, 6000, 10000, 11000] #koszt jednostki w nadprodukcji
+a = [60, 65, 70, 60] #możlwie nadprodukcje
+d = [130, 80, 125, 195] #zapotrzebowanie w okresie
+max = 100 #maksymalna możliwa ilość jednostek do wyprodukowania w danym okresie
+store_cost = 1500 # Koszt przechowywania jednej jednostki w magazynie
+s0 = 15 #Ilość jednostek na początku
+S_max = 70

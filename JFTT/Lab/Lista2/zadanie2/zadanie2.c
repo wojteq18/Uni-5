@@ -482,7 +482,7 @@ char *yytext;
 #line 2 "zadanie2.l"
 
 #line 484 "zadanie2.c"
-/* Definicja ekskluzywnych stanów startowych dla komentarzy wieloliniowych */
+/* Definicja stanów startowych dla komentarzy wieloliniowych */
 
 #line 487 "zadanie2.c"
 
@@ -1848,7 +1848,6 @@ void yyfree (void * ptr )
 
 
 int main(int argc, char *argv[]) {
-    /* Jeśli podano nazwę pliku jako argument, otwórz go */
     if (argc > 1) {
         FILE *file = fopen(argv[1], "r");
         if (!file) {
@@ -1858,7 +1857,6 @@ int main(int argc, char *argv[]) {
         /* Ustaw yyin (wejście dla Flexa) na ten plik */
         yyin = file;
     }
-    /* Jeśli nie podano argumentu, Flex domyślnie czyta ze standardowego wejścia */
 
     /* Uruchom analizę leksykalną */
     yylex();
