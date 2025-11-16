@@ -1,0 +1,33 @@
+N = 12
+from = 1
+to = 9
+Tmax = 30
+
+#lista łuków: (i,j,c,t), i to miasto 'z', j to maisto 'do', c to koszt przejazdu z miasta i do miasta j, t to czas przjeazdu z miasta i do miasta j
+arcs = [
+  {i=1, j=4, c=1, t=15},
+  {i=1, j=9, c=15, t=12},
+  {i=1, j=12, c=1, t=15},
+  {i=2, j=7, c=13, t=3},
+  {i=2, j=12, c=12, t=3},
+  {i=3, j=9, c=6, t=13},
+  {i=4, j=2, c=1, t=10},
+  {i=5, j=4, c=11, t=12},
+  {i=5, j=8, c=9, t=3},
+  {i=5, j=9, c=9, t=3},
+  {i=6, j=5, c=1, t=12},
+  {i=6, j=7, c=2, t=2},
+  {i=6, j=9, c=8, t=5},
+  {i=6, j=11, c=2, t=6},
+  {i=7, j=10, c=12, t=9},
+  {i=8, j=5, c=2, t=9},
+  {i=8, j=6, c=13, t=15},
+  {i=9, j=7, c=13, t=3},
+  {i=10, j=3, c=2, t=10},
+  {i=10, j=4, c=11, t=7},
+  {i=11, j=2, c=2, t=4},
+  {i=11, j=3, c=6, t=6},
+  {i=11, j=5, c=12, t=7},
+  {i=12, j=3, c=3, t=1},
+  {i=12, j=8, c=8, t=1},
+]

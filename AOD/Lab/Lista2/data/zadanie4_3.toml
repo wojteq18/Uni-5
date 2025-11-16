@@ -1,0 +1,12 @@
+N = 4
+from = 1
+to = 3
+Tmax = 8
+
+#lista łuków: (i,j,c,t), i to miasto 'z', j to maisto 'do', c to koszt przejazdu z miasta i do miasta j, t to czas przjeazdu z miasta i do miasta j
+arcs = [
+  {i=1, j=2, c=5, t=1},
+  {i=1, j=4, c=1, t=5},
+  {i=2, j=3, c=1, t=5},
+  {i=4, j=3, c=1, t=5},
+]

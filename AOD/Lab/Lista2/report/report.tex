@@ -1,0 +1,94 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsbsy}
+\usepackage{amsmath}
+
+
+
+\title{Algorytmy Optymalizacji Dyskretnej - Lista 2}
+\author{Wojciech Typer}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Zadanie 1}
+
+\subsection*{Cel zadania}
+Celem zadania jest zminimalizowanie kosztów dostawy paliwa
+
+\subsection*{Opis modelu}
+W zadaniu mamy następujące dane:
+\begin{itemize}
+    \item supply: $s_{i}$ ilość paliwa dostępna u dostawcy $i$
+    \item demand: $d_{j}$ ilość paliwa potrzebna na stacji $j$
+    \item cost: $c_{ij}$ koszt dostarczenia jednostki paliwa od dostawcy $i$ do stacji $j$
+    \item Niech $S$ oznacza zbiór dostawców, a $D$ zbiór odbiorców paliwa
+\end{itemize}
+
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item $x_{ij}$ - ilość paliwa dostarczona z magazynu $i$ do stacji $j$
+\end{itemize}
+
+\textbf{Ograniczenia:}
+\begin{itemize}
+    \item Podaż dla każdego dostawcy nie może zostać przekroczona:
+    \begin{equation}
+        \sum_{j \in D} x_{ij} \leq s_{i} \quad \forall i \in S
+    \end{equation}
+    \item Popyt dla każdej stacji musi zostać zaspokojony:
+    \begin{equation}
+        \sum_{i \in S} x_{ij} = d_{j} \quad \forall j \in D
+    \end{equation}
+    \item Zmienne decyzyjne nie mogą być ujemne:
+    \begin{equation}
+        x_{ij} \geq 0 \quad \forall i \in S, j \in D
+    \end{equation}
+    \item Aby model był możliwy do rozwiązania, całkowita podaż musi być większa bądź równa całkowitemu popytowi:
+    \begin{equation}
+        \sum_{i \in S} s_{i} \geq \sum_{j \in D} d_{j}
+    \end{equation}
+\end{itemize}
+
+\textbf{Funkcja celu:} 
+Chcemy zminimalizować całkowity koszt dostawy paliwa do odbiroców, tak aby każdy z nich otrzymał wymaganą ilość paliwa:
+\begin{equation}
+    \text{min}  \sum_{i \in S} \sum_{j \in D} c_{ij} x_{ij}
+\end{equation}
+
+\subsection*{Opis rozwiązania}
+Wyniki możemy przedstawić za pomocą macierzy: 
+\[
+\begin{bmatrix}
+0 & 165000.0 & 0 & 110000.0 \\
+110000.0 & 55000.0 & 0 & 0 \\
+0 & 0 & 330000.0 & 330000.0
+\end{bmatrix}
+\]
+Którą należy interpretować w następujący sposób:
+\begin{itemize}
+    \item Firma 1 dostarcza 165000 jednostek paliwa do stacji 2 oraz 110000 jednostek do stacji 4, czyli wysyła w sumie 275000 jednostek paliwa
+    \item Firma 2 dostarcza 110000 jednostek paliwa do stacji 1 oraz 55000 jednostek do stacji 2, czyli wysyła w sumie 165000 jednostek paliwa
+    \item Firma 3 dostarcza 330000 jednostek paliwa do stacji 3 oraz 330000 jednostek do stacji 4, czyli wysyła w sumie 660000 jednostek paliwa
+\end{itemize}
+Zatem całkowity koszt optymalnego dostarczenia paliwa wynosi 8 525 000 jednostek waluty.
+Z otrzymanych wyników możemy również wywnioskować, że wszystkie firmy dostarczają paliwo, oraz, że możliwości dostaw firmy 1 i 3 są w pełni wykorzystane.
+\end{document} 

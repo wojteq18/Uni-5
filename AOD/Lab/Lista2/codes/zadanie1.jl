@@ -50,6 +50,15 @@ function solveTransportProblem(s, d, C) #s -> zaopatrzenie, d -> popyt, C -> kos
         println("Firma ", i, " dostarczyła: ", round(total_supplied, digits=6), " jednostek paliwa (Dostępne: ", s[i], ")")
     end
     println()
+
+    #Gdzie dana firma wysyła paliwo
+    for i in I
+        for j in J
+            if X[i, j] > 1e-6 #Pomijamy bardzo małe wartości
+                println("Firma ", i, " wysyła do stacji ", j, ": ", round(X[i, j], digits=6), " jednostek paliwa")
+            end
+        end
+    end
 end    
 
 function main()
