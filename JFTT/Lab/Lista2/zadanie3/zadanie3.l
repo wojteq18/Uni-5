@@ -15,19 +15,30 @@ extern FILE *yyin;
 %x LINE_COMMENT
 %x BLOCK_COMMENT
 %x DOC_BLOCK_COMMENT
+%x IN_INCLUDE
 
 %%
 
 <INITIAL>{
-    /* --- Komentarze Dokumentacyjne --- */
 
-    "/**"|"/\\*!"                { if (print_doc) ECHO; BEGIN(DOC_BLOCK_COMMENT); }
-    "///"|"//!"                  { if (print_doc) { yyless(1); /* Drukuj całą linię, łącznie z "//" */ ECHO; } else { BEGIN(LINE_COMMENT); } }
+    ^[ \t]*#.*"include" {
+                            ECHO; /* Drukuj całą linię aż do "include" */
+                            BEGIN(IN_INCLUDE); /* Wejdź w stan obsługi #include */
+                        }
 
     /* --- Komentarze Standardowe --- */
 
     "//"                        BEGIN(LINE_COMMENT);
     "/*"                        BEGIN(BLOCK_COMMENT);
+    "/**/"
+
+
+    /* --- Komentarze Dokumentacyjne --- */
+
+    "/**"|"/\\*!"                { if (print_doc) ECHO; BEGIN(DOC_BLOCK_COMMENT); }
+    "///"|"//!"                  { if (print_doc) { yyless(1); /* Drukuj całą linię, łącznie z "//" */ ECHO; } else { BEGIN(LINE_COMMENT); } }
+
+
 
     /* --- Ciągi znaków (stringi) --- */
     
@@ -39,6 +50,13 @@ extern FILE *yyin;
 }
 
 
+<IN_INCLUDE>{
+    /* Wszystko w tej linii jest częścią dyrektywy, więc po prostu drukuj */
+    .       ECHO;
+
+    /* Koniec linii kończy dyrektywę i wraca do stanu normalnego */
+    \n      { ECHO; BEGIN(INITIAL); }
+}
 
 <IN_STRING>{
     \"                          { ECHO; BEGIN(INITIAL); }
