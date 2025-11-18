@@ -325,5 +325,89 @@ które polega na wysyłaniu części przepływu jedną ścieżką i pozostałej 
 Zauważmy również, że po usunięciu ograniczenia na czas przejazdu oraz całkowitoliczbowość dostajemy problem najtańszego przepływu w sieci,
 więc otrzymane rozwiązania będą akceptowalne.
 
+\section*{Zadanie 5}
+\subsection*{Cel zadania}
+Celem zadania jest zminimalizowanie ilości radiowozów wystawionych do patrolowania poszczególnych dzielnic miasta. 
+Zadanie to należy rozwiązać jako problem cyrkulacji.
 
+\subsection*{Opis modelu}
+W zadaniu mamy następujące dane:
+\begin{itemize}
+    \item $P$ - zbiór dzielnic miasta
+    \item $S$ - zbiór zmian patrolowych
+    \item Macierze ograniczeń dolych i górnych na liczbę radiowozów $U_{ij}, L_{ij}$, gdzie $i \in P$, $j \in S$
+    \item Wektor minimalnej liczby dostępnych radiowozów w dzielnicy $a_{i}$, gdzie $i \in P$
+    \item Wektor minimalej potrzebnej liczby radiowozów w zmianie $b_{j}$, gdzie $j \in S$
+\end{itemize}
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item $x_{ij}$ - liczba radiowozów przypisanych do dzielnicy $i \in P$ w zmianie $j \in S$
+\end{itemize}
+
+\subsection*{Ograniczenia}
+\begin{itemize}
+    \item Dla każdej dzielnicy $i \in P$ liczba radiowozów przydzielonych we wszystkich zmianach musi być co najmniej równa minimalnej wymaganej liczbie radiowozów:
+    \begin{equation}
+        \sum_{j \in S} x_{ij} \geq a_{i} \quad \forall i \in P
+    \end{equation}
+    \item Dla każdej zmiany $j \in S$ liczba radiowozów przydzielonych we wszystkich dzielnicach musi być co najmniej równa wymaganej liczbie radiowozów:
+    \begin{equation}
+        \sum_{i \in P} x_{ij} \geq b_{j} \quad \forall j \in S
+    \end{equation}
+\end{itemize}
+
+\subsection*{Funkcja celu}
+Celem jest minimalizacja całkowitej liczby radiowozów przydzielonych do patroli:
+\begin{equation}
+    \text{min} \sum_{i \in P} \sum_{j \in S} x_{ij}
+\end{equation}
+
+\subsection*{Opis rozwiązania}
+Dla danych z zadania otrzymujemy, że całkowita liczba radiowozów przydzielonych do patroli wynosi 48.
+
+\newpage
+\section*{Zadanie 6}
+\subsection*{Cel zadania}
+Celem zadania jest optymalne rozmieszczenie minimalnej ilości kamer potrzebnych do monitorowania placu z kontenerami.
+
+\subsection*{Opis modelu}
+W zadaniu mamy następujące dane:
+\begin{itemize}
+    \item $V$ - siatka, mająca wymiary $n$ x $m$, reprezentująca plac z kontenerami
+    \item $C$ - zbiór z miejscami zajętymi przez kontenery
+    \item $k$ - liczba reprezentująca zasięg kamery. Kamera widzi w kierunku poziomym i pionowym do odległości $k$ pól
+\end{itemize}
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item $x_{ij}$ - zmienna binarna wskazująca czy kamera jest zainstalowana na polu $(i, j) \in V$
+\end{itemize}
+
+\subsection*{Ograniczenia}
+\begin{itemize}
+    \item Każde miejsce zajęte przez kontener $p \in C$ musi być monitorowane przez co najmniej jedną kamerę:
+    \begin{equation}
+        \sum_{(i, j) \in \text{kamera widzi } p} x_{ij} \geq 1 \quad \forall p \in C
+    \end{equation}
+    \item Kamery można instalować tylko w miejscach nie zajętych przez kontenery:
+    \begin{equation}
+        x_{ij} = 0 \quad \forall (i, j) \in C
+    \end{equation}
+    \item Zmienne decyzyjne muszą być binarne:
+    \begin{equation}
+        x_{ij} \in \{0, 1\} \quad \forall (i, j) \in V
+    \end{equation}
+\end{itemize}
+
+\subsection*{Funkcja celu}
+Celem jest minimalizacja liczby zainstalowanych kamer:
+\begin{equation}
+    \text{min} \sum_{(i, j) \in V} x_{ij}
+\end{equation}
+
+\subsection*{Opis rozwiązania}
+Dla siatki o wymiarach 11 x 11 i 20 kontenerów rozmieszczonych na przekątnej kwadratu (bez kontenera na samym środku) otrzymujemy wyniki:
+\begin{itemize}
+    \item dla $k$ = 3, minimalna liczba kamer wynosi 8
+    \item dla $k$ = 5, minimalna liczba kamer wynosi 6
+\end{itemize}
 \end{document} 
