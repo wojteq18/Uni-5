@@ -107,5 +107,223 @@ W zadaniu mamy następujące dane:
     \item Maksymalny tygodniowy popyt $d_{i}$ dla każdego produktu $i \in P$
     \item Czas produkcji jednostki produktu $i$ na maszynie $m$ wynosi $t_{mi}$
     \item Dostępny czas pracy maszyny $m \in M$ w tygodniu wynosi $T_{m}$
-\end{itemize}    
+\end{itemize} 
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item Ilość wyprodukowanego produktu $i \in P$ oznaczona jako $x_{i}$
+\end{itemize}   
+\subsubsection*{Ograniczenia:}
+\begin{itemize}
+    \item Dostępny czas pracy maszyny nie może zostać przekroczony:
+    \begin{equation}
+        \sum_{i \in P} t_{mi} x_{i} \leq T_{m} \quad \forall m \in M
+    \end{equation}
+    \item Produkcja nie może przekroczyć maksymalnego popytu oraz musi być nieujemna:
+    \begin{equation}
+        0 \leq x_{i} \leq d_{i} \quad \forall i \in P
+    \end{equation}
+\end{itemize}
+\subsubsection*{Funkcja celu:}
+Celem jest maksymalizacja zysku z produkcji wyrobów:
+\begin{equation}
+    \text{max} \sum_{i \in P} (p_{i} - k_{i}) x_{i} - \sum_{m \in M} c_{m} \left( \sum_{i \in P} t_{mi} x_{i} \right)
+\end{equation}
+\subsection*{Opis rozwiązania}
+Otrzymujemy następujące rozwiązanie: 
+\begin{equation}
+    X = [125.0, 100.0, 150.0, 500.0] \text{, gdzie } X = [x_{i}]
+\end{equation}  
+Jest to wektor wyprodukowanych jednostek wyrobów $i \in P$. Uzyskany w ten sposób zysk wynosi 3632.5 dolarów. Czas pracy maszyn wynosi: 
+\begin{itemize}
+    \item Maszyna 1: 3520 minut
+    \item Maszyna 2: 3600 minut
+    \item Maszyna 3: 2100 minut
+\end{itemize}  
+
+\section*{Zadanie 3}
+\subsection*{Cel zadania}
+Wyznaczyć plan produkcji i magazynowania wytwarzanego towaru, który spełnia zapotrzebowanie w każdym okresie i minimalizuje łączny koszt.
+
+\subsection*{Opis modelu}
+W zadaniu mamy dostępne następujące dane:
+\begin{itemize}
+    \item $T$ - liczba okresów planowania
+    \item $c_{j}$ - koszt produkcji jednostki towaru w okresie $j \in T$
+    \item $o_{j}$ - koszt produkcji jednostki towaru w nadprodukcji w okresie $j \in T$
+    \item $a_{j}$ - ilość możliwej nadprodukcji w okresie $j \in T$
+    \item $d_{j}$ - zapotrzebowanie na towar w okresie $j \in T$
+    \item $P_{max}$ - maksymalna ilość towaru, którą firma może wyprodukować w okresie czasu
+    \item $h$ - koszt magazynowania jednostki towaru przez jeden okres czasu
+    \item $s_{0}$ - początkowa ilość towaru w magazynie
+    \item $S_{max}$ - maksymalna pojemność magazynu
+\end{itemize}
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item $x_{j}$ - ilość produkowanego towaru w okresie $j \in T$ w standardowej produkcji
+    \item $y_{j}$ - ilość produkowanego towaru w okresie $j \in T$ w nadprodukcji
+    \item $s_{j}$ - ilość towaru w magazynie na koniec okresu $j \in T$
+\end{itemize}
+
+\newpage
+\subsection*{Ograniczenia}
+\begin{itemize}
+    \item Nie ponadmiarowa produkcja nie może przekroczyć maksymalnej produkcji:
+    \begin{equation}
+        0 \leq x_{j} \leq P_{max} \quad \forall j \in T
+    \end{equation}
+    \item Ponadmiarowa produkcja nie może przekroczyć możliwej nadprodukcji:
+    \begin{equation}
+        0 \leq y_{j} \leq a_{j} \quad \forall j \in T
+    \end{equation}
+    \item Ilość towaru w magazynie nie może przekroczyć jego maksymalnej pojemności:
+    \begin{equation}
+        0 \leq s_{j} \leq S_{max} \quad \forall j \in T
+    \end{equation}
+    \item Bilans zapasu magazynowego w każdym okresie musi zostać zachowany:
+    \begin{equation}
+        s_{j-1} + x_{j} + y{j} = d_{j} + s_{j} \quad \forall j \in T
+    \end{equation} 
+\end{itemize}
+
+\subsection*{Funkcja celu}
+Celem jest minimalizacja całkowitych kosztów produkcji i magazynowania towaru:
+\begin{equation}
+    \text{min} \sum_{j \in T} c_{j} x_{j} + o_{j} y_{j} + h s_{j}
+\end{equation}
+
+\subsection*{Opis rozwiązania}
+Otrzymujemy następujące wyniki:
+\begin{itemize}
+    \item Okres 1: $x_{1} = 100, y_{1} = 15, s_{1} = 0$
+    \item Okres 2: $x_{2} = 100, y_{2} = 50, s_{2} = 70$
+    \item Okres 3: $x_{3} = 100, y_{3} = 0, s_{3} = 45$
+    \item Okres 4: $x_{4} = 100, y_{4} = 50, s_{4} = 0$
+\end{itemize}
+Na podstawie wyników możemy stwierdzić, że minimalny koszt produkcji i magazynowania wynosi 3 842 500 dolarów, 
+w okresach 1, 2 i 4 firma korzysta z nadprodukcji a możliwości magazynowania towaru są wyczerpane na koniec drugiego okresu.
+
+\newpage
+\section*{Zadanie 4}
+\subsection*{Cel zadania}
+Celem jest znalezienie połączenia z miasta $i$ do miasta $j$, którego całkowity koszt jest najmniejszy i całkowity czas przejazdu nie przekracza z góry zadanego czasu $T$.
+
+\subsection*{Opis modelu}
+W zadaniu mamy następujące dane:
+\begin{itemize}
+    \item $N$ - zbiór miasta
+    \item $A$ - zbiór dróg, gdzie każda droga $(i, j)$ łączy miasto $i \in N$ z miastem $j \in T$
+    \item $c_{ij}$ - koszt przejazdu drogą $(i, j) \in A$
+    \item $t_{ij}$ - czas przejazdu drogą $(i, j) \in A$
+    \item $i$ - miasto początkowe
+    \item $j$ - miasto końcowe
+    \item $T$ - maksymalny dozwolony czas podróży
+\end{itemize}
+W modelu mamy następujące zmienne decyzyjne:
+\begin{itemize}
+    \item $x_{ij}$ - zmienna binarna wskazująca czy droga $(i, j) \in A$ jest w wybrana w trasie
+\end{itemize}
+
+\subsection*{Ograniczenia}
+\begin{itemize}
+    \item Całkowity czas podróży nie może przekroczyć zadanego $T$:
+    \begin{equation}
+        \sum_{(i, j) \in A} t_{ij} x_{ij} \leq T
+    \end{equation}
+    \item Zachowanie przepływu w każdym mieście $k \in N$:
+        \[
+            \sum_{j: (k,j) \in A} x_{kj} - \sum_{i: (i,k) \in A} x_{ik} =
+            \begin{cases}
+                1, & \text{jeśli } k = i^{\circ} \\
+                -1, & \text{jeśli } k = j^{\circ} \\
+                0 & \text{w przeciwnym razie}
+            \end{cases}
+        \]
+    \item Zmienne decyzyjne muszą być binarne:
+    \begin{equation}
+        x_{ij} \in \{0, 1\} \quad \forall (i, j) \in A
+    \end{equation}
+\end{itemize}
+
+\subsection*{Funkcja celu}
+Celem jest minimalizacja kosztu przejazdu z miasta początkowego do miasta końcowego:
+\begin{equation}
+    \text{min} \sum_{(i, j) \in A} c_{ij} x_{ij} 
+\end{equation}
+
+\subsection*{Opis rozwiązań}
+Dla danych z zadania, to jest:
+\begin{itemize}
+    \item $N$ = 10
+    \item $i$ = 1
+    \item $j$ = 10
+    \item $T_{max}$ = 15
+    \item $arcs$ - podane 
+\end{itemize}
+Otrzymuejmy następujące wyniki:
+\begin{itemize}
+    \item Minimalny koszt: 13.0
+    \item Czas przejazdu: 15.0
+    \item Ścieżka: $1 \rightarrow 2 \rightarrow 3 \rightarrow 5 \rightarrow 7 \rightarrow 9 \rightarrow 10$
+\end{itemize}
+Dla danych z własnego egzemplarza, to jest: 
+\begin{itemize}
+    \item $N$ = 12
+    \item $i$ = 1
+    \item $j$ = 9
+    \item $T_{max}$ = 30
+    \item $arcs$ - jak na rysunku poniżej
+\end{itemize}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{/home/wojteq18/sem5/AOD/Lab/Lista2/examples/my_graph.png}
+
+    \caption{Własny egzemplarz do zadania 4}
+    
+\end{figure}
+\newpage
+Otrzymujemy następujące wyniki:
+\begin{itemize}
+    \item Minimalny koszt: 10.0
+    \item Czas przejazdu: 29.0
+    \item Ścieżka: $1 \rightarrow 12 \rightarrow 3 \rightarrow 9$
+\end{itemize}
+Zauważmy, że ograniczenie na całkowitoliczbowość jest istotne. Rozpatrujemy następujący graf:
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{/home/wojteq18/sem5/AOD/Lab/Lista2/examples/bad_graph.png}
+
+    \caption{Przykład grafu, w którym ograniczenie na całkowitoliczbowość jest ważna}    
+\end{figure}
+Mamy następujące dane:
+\begin{itemize}
+    \item $N$ = 4
+    \item $i$ = 1
+    \item $j$ = 3
+    \item $T_{max}$ = 8
+    \item $arcs$ - jak na rysunku poniżej
+\end{itemize}
+Bez ograniczenia na całkowitoliczbowość otrzymuejmy rozwiązanie:
+\begin{itemize}
+    \item Minimalny koszt: 4.0
+    \item Czas przejazdu: 8.0
+    \item Ścieżka: ---
+\end{itemize}
+Do wyboru mieliśmy dwie ścieżki:
+\begin{itemize}
+    \item Ścieżka 1: $ 1 \rightarrow 2 \rightarrow 3$ o koszcie 6 i czasie 6
+    \item Ścieżka 2: $ 1 \rightarrow 4 \rightarrow 3$ o koszcie 2 i czasie 10
+\end{itemize}
+Solver, chcąc zminimalizować koszt patrzy na tańszą ścieżkę drugą, która nie mieści się w ograniczeniu czasowym, ale 
+ponieważ pozwoliliśmy na wartości ułamkowe, solver znajduje matematycznie poprawne, ale logicznie bezsensowne rozwiązanie,
+które polega na wysyłaniu części przepływu jedną ścieżką i pozostałej części przepływu drugą ścieżką.
+\newpage
+Zauważmy również, że po usunięciu ograniczenia na czas przejazdu oraz całkowitoliczbowość dostajemy problem najtańszego przepływu w sieci,
+więc otrzymane rozwiązania będą akceptowalne.
+
+
 \end{document} 

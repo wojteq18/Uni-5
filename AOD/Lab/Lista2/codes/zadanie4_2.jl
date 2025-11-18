@@ -54,6 +54,9 @@ function solveTransportProblem(N, from, to, Tmax, I, J, C, T)
     println("Minimalny koszt: ", round(obj, digits=6))
     println()
 
+    println("Całkowity czas wynosi: ", sum(T[a] * X[a] for a in A))
+
+
     #Znaleziona trasa 
     for a in A 
         if X[a] > 0.5
