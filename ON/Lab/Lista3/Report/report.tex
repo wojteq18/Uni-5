@@ -1,0 +1,131 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{booktabs} % Lepsza jakość tabel
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}  % Dla tabel wielostronicowych
+
+
+\usepackage{siunitx} 
+\sisetup{
+    output-exponent-marker = e,
+    bracket-numbers = false,
+    group-separator = {\,}, 
+    scientific-notation = true
+}
+
+% Inne
+\usepackage{hyperref} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Obliczenia Naukowe - Lista 1},
+    pdfauthor={Wojciech Typer},
+}
+
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 3}
+\author{Wojciech Typer}
+
+\begin{document}
+\maketitle
+\section*{Zadanie 1}
+\subsection*{Cel zadania}
+Celem zadania było zaimplementowanie metody bisekcji w języku Julia.
+
+\subsection*{Idea metody}
+Metoda bisekcji (zwana też metodą połowienia przedziału) to iteracyjny algorytm wyznaczania miejsca zerowego funkcji ciągłej $f(x)$. Bazuje ona na własności Darboux, która gwarantuje istnienie pierwiastka w przedziale domkniętym $[a, b]$, jeżeli funkcja przyjmuje na jego końcach wartości o przeciwnych znakach:
+\begin{equation}
+    f(a) \cdot f(b) < 0
+\end{equation}
+
+Idea metody polega na systematycznym zawężaniu obszaru poszukiwań poprzez:
+\begin{itemize}
+    \item Wyznaczenie środka przedziału $c = \frac{a+b}{2}$.
+    \item Sprawdzenie znaku iloczynu $f(a) \cdot f(c)$.
+    \item Wybór tej połowy przedziału ($[a, c]$ lub $[c, b]$), w której następuje zmiana znaku funkcji.
+\end{itemize}
+Procedurę tę powtarza się do momentu, gdy szerokość przedziału będzie mniejsza od zadanej tolerancji $\delta$ lub wartość funkcji $|f(c)|$ spadnie poniżej $\epsilon$.
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/bisekcja.png}
+
+    \caption{Wizualizacja metody bisekcji dla 5 iteracji}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\newpage
+\section*{Zadanie 2}
+\subsection*{Cel zadanie}
+Celem zadania było zaimplementowanie metody Newtona w języku Julia.
+
+\subsection*{Idea metody}
+Metoda Newtona (nazywana również metodą stycznych) to szybki algorytm iteracyjny służący do znajdowania przybliżonego miejsca zerowego funkcji różniczkowalnej $f(x)$. W przeciwieństwie do metody bisekcji, metoda ta wykorzystuje nie tylko wartość funkcji, ale także jej pierwszą pochodną $f'(x)$.
+Idea geometryczna metody polega na zastąpieniu wykresu funkcji jej styczną. W punkcie startowym $x_0$ prowadzimy styczną do krzywej $y=f(x)$. Punkt przecięcia tej stycznej z osią odciętych (oś OX) staje się nowym przybliżeniem pierwiastka ($x_1$). Proces ten powtarza się dla kolejnych punktów, zgodnie ze wzorem rekurencyjnym:
+\begin{equation}
+    x_{k+1} = x_k - \frac{f(x_k)}{f'(x_k)}
+\end{equation}
+Warunkiem koniecznym zbieżności jest odpowiedni dobór punktu startowego $x_0$ (musi znajdować się wystarczająco blisko pierwiastka) oraz to, aby pochodna $f'(x)$ nie była bliska zeru w otoczeniu rozwiązania. Algorytm kończy działanie, gdy różnica między kolejnymi przybliżeniami ($|x_{k+1} - x_k| < \delta$) lub wartość funkcji ($|f(x_{k+1})| < \epsilon$) są dostatecznie małe.
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/newton.png}
+
+    \caption{Wizualizacja metody Newtona dla 4 iteracji}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\newpage
+\section*{Zadanie3}
+\subsection*{Cel zadania}
+Celem zadania było zaimplementowanie metody siecznych w języku Julia.
+
+\subsection*{Idea metody}
+Metoda siecznych jest iteracyjnym algorytmem wyznaczania miejsc zerowych funkcji, będącym wariantem metody Newtona. Jej główną zaletą jest brak konieczności analitycznego wyznaczania pochodnej funkcji $f'(x)$, co jest kluczowe w przypadkach, gdy wzór na pochodną jest skomplikowany lub niedostępny.
+Idea metody polega na przybliżeniu pochodnej za pomocą ilorazu różnicowego, obliczanego na podstawie dwóch poprzednich iteracji. Geometrycznie oznacza to zastąpienie stycznej (używanej w metodzie Newtona) przez sieczną przechodzącą przez dwa ostatnie punkty na wykresie funkcji: $(x_{k-1}, f(x_{k-1}))$ oraz $(x_k, f(x_k))$. Punkt przecięcia tej prostej z osią OX wyznacza nowe przybliżenie pierwiastka $x_{k+1}$, zgodnie ze wzorem rekurencyjnym:
+\begin{equation}
+    x_{k+1} = x_k - f(x_k) \cdot \frac{x_k - x_{k-1}}{f(x_k) - f(x_{k-1})}
+\end{equation}
+W przeciwieństwie do metody stycznych, algorytm ten wymaga podania dwóch punktów startowych $x_0$ i $x_1$. Iteracje są kontynuowane do momentu spełnienia warunków zbieżności, analogicznych do pozostałych metod (mała różnica między kolejnymi przybliżeniami lub wartość funkcji bliska zeru).
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/sieczne.png}
+
+    \caption{Wizualizacja metody siecznych dla 3 iteracji}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\newpage
+
+\section*{Zadanie 4}
+\subsection*{Cel zadania}
+Celem zadania jest wyznaczdenie pierwiasta równania $x - (\frac{1}{2}) x^{2} = 0$ za pomocą:
+\begin{itemize}
+    \item metody bisekcji, gdzie a = 1.5, b = 2.0, $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$
+    \item metody Newtona, gdzie $x_0 = 1.5$, $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$
+    \item metody siecznych, gdzie $x_0 = 1.0$, $x_1 = 2.0$, $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$
+\end{itemize}
+
+\end{document}
