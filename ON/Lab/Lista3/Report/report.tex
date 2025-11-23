@@ -127,5 +127,116 @@ Celem zadania jest wyznaczdenie pierwiasta równania $x - (\frac{1}{2}) x^{2} = 
     \item metody Newtona, gdzie $x_0 = 1.5$, $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$
     \item metody siecznych, gdzie $x_0 = 1.0$, $x_1 = 2.0$, $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$
 \end{itemize}
+Zauważmy, że do obliczenia pierwiasta funkcji metodą Newtona potrzebna jest pochodna funkcji:
+\begin{equation}
+    f'(x) = cos(x) - \frac{x}{2}
+\end{equation}
 
+\subsection*{Wyniki}
+\begin{table}[H]
+    \centering
+    \caption{Porównanie wyników metod numerycznych dla funkcji $f(x)$}
+    \label{tab:wyniki}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Metoda} & \textbf{Przybliżenie $x$} & \textbf{Wartość $f(x)$} & \textbf{Iteracje} & \textbf{Kod błędu} \\ \hline
+    Bisekcji & 1.933753967 & $-2.70 \times 10^{-7}$ & 16 & 0 \\ \hline
+    Stycznych (Newtona) & 1.933753780 & $-2.24 \times 10^{-8}$ & 4 & 0 \\ \hline
+    Siecznych & 1.933753644 & $1.56 \times 10^{-7}$ & 4 & 0 \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Wnioski}
+Zauważmy, że każda z trzech metod zachowała się poprawnie dla zadanych wartości - zwróciły kod błędu: $err = 0$.
+Zwróćmy również uwagę na liczbę iteracji: metoda bisekcji okazała się najwolniejsza (potrzebowała 16 iteracji), podczas gdy metody Newtona i siecznych tylko 4.
+Metoda Newtona zwróciła również najdokładniejszy wynik spośród wszystkich trzech metod.
+
+\newpage
+\section*{Zadanie 5}
+\subsection*{Cel zadania}
+Celem zadania jest znalezienie wartości zmiennej $x$ metodą bisekcji, dla której wykresy funkcji $y = 3x$ i $y = e^{x}$ przecinają się.
+
+\subsection*{Rozwiązanie}
+Zauważmy, że zadanie sprowadza się do znalezienia miejsca zerowego funkcji: $f(x) = 3x - e^{x}$.
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/5funkja.png}
+
+    \caption{Fragment wykresu funkcji $f(x) = 3x - e^{x}$}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+Na powyższym wykresie widzimy, że funkcja $f(x) = 3x - e^{x}$ ma dwa miejsca zerowe:
+\begin{itemize}
+    \item pierwsze miejsce zerowe znajduje się w przedziale $[0, 1]$
+    \item drugie miejsce zerowe znajduje się w przedziale $[1, 2]$
+\end{itemize}
+Zastosujmy metodę bisekcji dla obu przedziałów z parametrami: $\delta = \frac{1}{2} \cdot 10^{-5}$ i $\epsilon = \frac{1}{2} \cdot 10^{-5}$, tak jak w poprzednim zadaniu.
+
+\begin{table}[H]
+    \centering
+    \label{tab:bisekcja_dwa_przedzialy}
+    \begin{tabular}{|l|c|c|c|c|c|}
+    \hline
+    \textbf{Opis} & \textbf{Przedział} & \textbf{Przybliżenie $x$} & \textbf{Wartość $f(x)$} & \textbf{Iter.} & \textbf{Err} \\ \hline
+    Pierwiastek 1 & $[0.0, 1.0]$ & 0.619064331 & $3.48 \times 10^{-6}$ & 16 & 0 \\ \hline
+    Pierwiastek 2 & $[1.0, 2.0]$ & 1.512134552 & $-5.29 \times 10^{-10}$ & 18 & 0 \\ \hline
+    \end{tabular}
+    \caption{Wyniki metody bisekcji dla dwóch różnych miejsc zerowych}
+
+\end{table}
+
+\subsection*{Wnioski}
+Żeby rozwiązać ten problem, musieliśmy go przekształcić do postaci jednej funkcji, aby zastosowanie metody bisekcji było możliwe.
+Metoda bisekcji zadziałała poprawnie dla obu przedziałów, zwracając kod błędu $err = 0$.
+Pierwsze miejsce zerowe zostało znalezione w 16 iteracjach, a drugie w 18 iteracjach.
+Wartości $f(x)$ dla znalezionych miejsc zerowych są bardzo bliskie zeru, co świadczy o poprawności uzyskanych wyników.
+
+\newpage
+\section*{Zadanie 6}
+\subsection*{Cel zadania}
+Celem zadania jest znalezienie miejsca zerowego funkcji:
+\begin{itemize}
+    \item $f_{1}(x) = e^{1-x} - 1$
+    \item $f(x) = x \cdot e^{-x}$
+\end{itemize}
+za pomocą metody bisekcji, Newtona i siecznych z parametrami: $\delta = 10^{-5}$ i $\epsilon = 10^{-5}$.
+Musimy również wybrać odpowiednie przedziały i przybliżenia początkowe.
+Następnie musimy sprawdzić, co stanie się, gdy w metodzie Newtona dla $f_1$ wybierzemy $x_1 \in (1, \infty)$ 
+a dla $f_2$ wybierzemy $x_0 > 1$. 
+Należy również odpowiedzieć na pytanie, czy dla $f_2$ możemy wybrać $x_0 = 1$.
+
+\subsection*{Rozwiązanie}
+\textbf{Dla funkcji} $f_{1}(x) = e^{1-x} - 1$:
+\begin{itemize}
+    \item Metoda bisekcji: przedział $[0.0, 2.0]$
+    \item Metoda Newtona: przybliżenie początkowe: $x_0 = 0.5$, pochodna funkcji: $f'_{1}(x) = -e^{1-x}$
+    \item Metoda siecznych: przybliżenia początkowe: $x_0 = 0.0$, $x_1 = 2.0$
+\end{itemize}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/funkcja61.png}
+
+    \caption{Fragment wykresu funkcji $f(x) = e^{1-x} - 1$}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \label{tab:wyniki_porownanie_2}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Metoda} & \textbf{Przybliżenie $x$} & \textbf{Wartość $f(x)$} & \textbf{Iter.} & \textbf{Err} \\ \hline
+    Bisekcji & 1.000000000 & 0.0 & 1 & 0 \\ \hline
+    Newtona & 0.999999999 & $1.12 \times 10^{-10}$ & 4 & 0 \\ \hline
+    Siecznych & 1.000001760 & $-1.76 \times 10^{-6}$ & 6 & 0 \\ \hline
+    \end{tabular}
+    \caption{Wyniki poszukiwania pierwiastka $x \approx 1.0$}
+\end{table}
 \end{document}
