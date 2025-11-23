@@ -8,7 +8,7 @@ function main()
     b = 2.0
     delta = 10.0^-5
     epsilon = 10.0^-5
-    x0 = 0.5
+    x0 = 10.0
     maxit = 100
     pf(x) = -exp(1 - x)
     root_bisekcji = mbisekcji(f, a, b, delta, epsilon)

@@ -208,8 +208,7 @@ Następnie musimy sprawdzić, co stanie się, gdy w metodzie Newtona dla $f_1$ w
 a dla $f_2$ wybierzemy $x_0 > 1$. 
 Należy również odpowiedzieć na pytanie, czy dla $f_2$ możemy wybrać $x_0 = 1$.
 
-\subsection*{Rozwiązanie}
-\textbf{Dla funkcji} $f_{1}(x) = e^{1-x} - 1$:
+\subsection*{Rozwiązanie dla funkcji $f_{1}(x) = e^{1-x} - 1$}
 \begin{itemize}
     \item Metoda bisekcji: przedział $[0.0, 2.0]$
     \item Metoda Newtona: przybliżenie początkowe: $x_0 = 0.5$, pochodna funkcji: $f'_{1}(x) = -e^{1-x}$
@@ -239,4 +238,58 @@ Należy również odpowiedzieć na pytanie, czy dla $f_2$ możemy wybrać $x_0 =
     \end{tabular}
     \caption{Wyniki poszukiwania pierwiastka $x \approx 1.0$}
 \end{table}
+
+\subsection*{Wnioski dla funkcji $f_1$}
+Wszystkie trzy metody zadziałały poprawnie, zwracając kod błędu $err = 0$.
+Metoda bisekcji była najszybsza, znajdując pierwiastek w zaledwie jednej iteracji. Świadczy to o tym, że pierwiastek znajdował się dokładnie w połowie zadanego przedziału początkowego.
+Metoda Newtona i siecznych również zwróciły poprawne wyniki, potrzebując do tego kolejno 4 i 6 iteracji.
+Wszystkie 3 metody dały wyniki bardzo bliskie dokładnej wartości pierwiastka $x = 1.0$.
+
+\subsection*{Rozwiązanie dla funkcji $f_{2}(x) = x \cdot e^{-x}$}
+\begin{itemize}
+    \item Metoda bisekcji: przedział $[-1.0, 2.0]$
+    \item Metoda Newtona: przybliżenie początkowe: $x_0 = 0.5$, pochodna funkcji: $f'_{2}(x) = \frac{1-x}{e^x}$
+    \item Metoda siecznych: przybliżenia początkowe: $x_0 = -1.0$, $x_1 = 1.0$
+\end{itemize}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../Examples/funkcja62.png}
+
+    \caption{Fragment wykresu funkcji $f(x) = x \cdot e^{-x}$}
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \caption{Wyniki metod numerycznych dla pierwiastka bliskiego zeru}
+    \label{tab:wyniki_bliskie_zera}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    \textbf{Metoda} & \textbf{Przybliżenie $x$} & \textbf{Wartość $f(x)$} & \textbf{Iter.} & \textbf{Err} \\ \hline
+    Bisekcji & $7.63 \times 10^{-6}$ & $7.63 \times 10^{-6}$ & 17 & 0 \\ \hline
+    Newtona & $-3.06 \times 10^{-7}$ & $-3.06 \times 10^{-7}$ & 5 & 0 \\ \hline
+    Siecznych & $1.74 \times 10^{-8}$ & $1.74 \times 10^{-8}$ & 18 & 0 \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection*{Wnioski dla funkcji $f_2$}
+Wszystkie trzy metody zadziałały poprawnie, zwracając kod błędu $err = 0$.
+Metoda Newtona była najszybsza, znajduąc pierwiastek w 5 iteracjach.
+Metoda bisekcji potrzebowała 17 iteracji, a metoda siecznych 18 iteracji.
+Wszystkie trzy metody dały wyniki bardzo bliskie dokładnej wartości pierwiastka $x = 0$.
+
+\subsection*{Co się stanie jeśli w $f_{1}$ wybierzemy $x_0 \in (1, \infty)$ w metodzie Newtona?}
+Wybór punktu startowego $x_{0}$ > 1 powoduje, że pochodna funkcji $f_{1}$ jest bardzo mała. W rezultacie otrzymujemy kod błędu $err = 1$, co oznacza, że nie 
+udało się osiągnąć zadanej dokładności w maksymalnej liczbie iteracji. Oczywiście, gdyy $x_{0}$ >> 1, to pochodna jest tak mała, 
+że staje się niereprentowalna i w rezultacie otrzymujemy kod błędu $err = 2$.
+
+\subsection*{Co się stanie jeśli w $f_{2}$ wybierzemy $x_0 > 1$ w metodzie Newtona?}
+Wybór punktu startowego $x_{0}$ > 1, funkcja zwraca niepoprawne wyniki. Wynika to z faktu, że dla $x_{0}$ >> 1, $f_2(x_0)$ < $\epsilon$ i 
+funkcja kończy działanie przeprowadzając 0 iteracji (lub dla $x_{0}$ bliskiego 1, wykonuje kilka iteracji, ale zbliża się do większych wartości x, a nie do pierwiastka).
+Gdy weźmiemy $x_{0} = 1$ to pochodna funkcji $f_{2}$ w tym punkcie jest równa 0, co prowadzi do otrzymania kodu błędu $err = 2$.
+
 \end{document}
