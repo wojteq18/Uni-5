@@ -1,0 +1,206 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{booktabs} % Lepsza jakość tabel
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}  % Dla tabel wielostronicowych
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{siunitx} 
+\sisetup{
+    output-exponent-marker = e,
+    bracket-numbers = false,
+    group-separator = {\,}, 
+    scientific-notation = true
+}
+
+% Inne
+\usepackage{hyperref} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Obliczenia Naukowe - Lista 1},
+    pdfauthor={Wojciech Typer},
+}
+
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 4}
+\author{Wojciech Typer}
+
+\begin{document}
+\maketitle
+\section*{Zadanie 1}
+\subsection*{Cel zadania}
+Celem zadania jest napisanie funkcji obliczającej ilorazy różnicowe. Funkcja ma przyjmować dwa argumenty: 
+\begin{itemize}
+    \item x $\rightarrow$ wektor długości n + 1 zawierający węzły: $x_{0} \text{, ..., } x_{n}$
+    \item f $\rightarrow$ wektor długości n + 1 zawierający wartości interpolowanej funkcji w węzłach $f(x_{0} \text{, ..., } f(x_{n}))$
+\end{itemize}
+Funkcja ma zwracać $fx \rightarrow$ wektor długości n + 1, zawierający obliczone ilorazy róznicowe: 
+\begin{center}
+$fx = f[x_{0}] \text{, ..., } fx[n+1] = f[x_{0}, ..., x_{n}]$
+\end{center}
+
+\subsection*{Idea metody}
+Obliczymy to na podstawie wzoru rekurencyjnego: iloraz rzędu k możemy policzyć na podstawie ilorazu rzędku k - 1:
+\begin{center}
+    $ f[x_{i} \text{, ..., } x_{i+k}] = \frac{f[x_{i+1} \text{, ..., } x_{i+k}] - f[x_{i} \text{, ..., } x_{i+k-1}]}{x_{i+k} - x_{i}}$
+\end{center}
+
+\subsection*{Implementacja}
+\begin{algorithm}
+\caption{Obliczanie ilorazów różnicowych (Newton)}
+\begin{algorithmic}[1] % [1] włącza numerowanie linii
+    \Require $x$: wektor węzłów ($x_0, \dots, x_n$)
+    \Require $f$: wektor wartości funkcji ($f(x_0), \dots, f(x_n)$)
+    \Ensure $fx$: wektor ilorazów różnicowych
+    
+    \Function{IlorazyRoznicowe}{$x, f$}
+        \State $n \gets \text{length}(f) - 1$ 
+        \State $fx \gets \text{copy}(f)$ 
+        
+        \Statex % Pusta linia dla czytelności
+        
+        \For{$j \gets 1$ \textbf{to} $n$} 
+            \For{$i \gets n+1$ \textbf{downto} $j+1$} 
+                \State $licznik \gets fx[i] - fx[i-1]$
+                \State $mianownik \gets x[i] - x[i-j]$
+                \State $fx[i] \gets \frac{licznik}{mianownik}$
+            \EndFor
+        \EndFor
+        
+        \State \Return $fx$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+\section*{Zadanie 2}
+\subsection*{Cel zadania}
+Celem zadania jest napisanie funkcji obliczającej wartości wielomianu interpolacyjnego stopnia n w postaci Newtona za pomocą
+uogólnionego schematu Hornera w czasie O(n).
+Funkcja ma przyjmować trzy argumenty:
+\begin{itemize}
+    \item x $\rightarrow$ wektor długości n + 1 zawierający węzły: $x_{0} \text{, ..., } x_{n}$
+    \item fx $\rightarrow$ wektor długości n + 1, zawierający ilorazy różnicowe: $fx = f[x_{0}] \text{, ..., } fx[n+1] = f[x_{0}, ..., x_{n}]$
+    \item t $\rightarrow$ punkt, w którym liczymy wartość wielomianu
+\end{itemize}
+Funkcja ma zwracać wartość wielomianu interpolacyjnego w punkcie t.
+
+\subsection*{Idea metody}
+Wielomian Newtona możemy zapisać w postaci:
+\begin{center}
+$N_{n}(x) = c_{0} + c_{1}(x - x_{0}) + c_{2}(x - x_{0})(x - x_{1}) + \dots + c_{n}(x - x_{0})(x - x_{1}) \cdots (x - x_{n-1})$
+\end{center}
+Gdybyśmy chcieli policzyć każdy składnik osobno, to złożoność obliczeniowa wyniosłaby O(n$^{2}$). Możemy jednak skorzystać z uogólnionego schematu Hornera, który pozwala na obliczenie wartości wielomianu w czasie O(n):
+\begin{center}
+$N_{n}(x) = c_{0} + (t - x_{0}) \left( c_{1} + (t - x_{1}) \left( c_{2} + \dots + (t - x_{n-1}) c_{n} \right) \right)$
+\end{center}
+Słownie mówiąc, zaczynamy od ostatniego współczynnika $c_{n}$ i iteracyjnie dodajemy kolejne składniki, mnożąc je przez odpowiednie czynniki $(t - x_{i})$ i dodając $c_{i}$.
+
+\subsection*{Implementacja}
+\begin{algorithm}
+\caption{Obliczanie wartości wielomianu Newtona (Schemat Hornera)}
+\begin{algorithmic}[1]
+    \Require $x$: wektor węzłów ($x_0, \dots, x_n$)
+    \Require $fx$: wektor ilorazów różnicowych ($f[x_0], \dots, f[x_0, \dots, x_n]$)
+    \Require $t$: punkt, w którym liczymy wartość
+    \Ensure $nt$: wartość wielomianu w punkcie $t$
+    
+    \Function{WarNewton}{$x, fx, t$}
+        \State $n \gets \text{length}(fx) - 1$ \Comment{Stopień wielomianu}
+        \State $nt \gets fx[n+1]$ \Comment{Inicjalizacja ostatnim współczynnikiem}
+        
+        \Statex
+        \For{$i \gets n$ \textbf{downto} $1$} \Comment{Iteracja od przedostatniego wyrazu}
+            \State $nt \gets fx[i] + (t - x[i]) \cdot nt$
+        \EndFor
+        
+        \State \Return $nt$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+
+\section*{Zadanie 3}
+\subsection*{Cel zadania}
+Celem zadanie jest napisanie funkcji obliczającej w czasie $O(n^2)$ współczynniki wielomianu zapisanego w postaci naturalnej.
+Funkcja ma przyjmować dwa argumenty:
+\begin{itemize}
+    \item x $\rightarrow$ wektor długości n + 1 zawierający węzły: $x_{0} \text{, ..., } x_{n}$
+    \item fx $\rightarrow$ wektor długości n + 1, zawierający ilorazy różnicowe: $fx = f[x_{0}] \text{, ..., } fx[n+1] = f[x_{0}, ..., x_{n}]$
+\end{itemize}
+Funkcja ma zwracać wektor $a$ długości n + 1, zawierający współczynniki wielomianu w postaci naturalnej:
+\begin{center}
+$W_{n}(x) = a_{0} + a_{1} x + a_{2} x^{2} + ... + a_{n} x^{n}$
+\end{center}
+
+\subsection*{Idea metody}
+Wielomian w postaci Newtona zadany jest wzorem:
+\begin{center}
+$N_{n}(x) = c_{0} + c_{1}(x - x_{0}) + c_{2}(x - x_{0})(x - x_{1}) + ... + c_{n}(x - x_{0})(x - x_{1}) ... (x - x_{n-1})$
+\end{center}
+Aby uzyskać postać naturalną, musimy wymnożyć wszystkie czynniki $(x-x_i)$ i uporządkować wyrazy według potęg $x$. Możemy to zrobić iteracyjnie, korzystając ze schematu Hornera do mnożenia wielomianów.
+Algorytm polega na aktualizacji tablicy współczynników, "wciągając" kolejne czynniki $(x - x_k)$ do obliczonych już współczynników postaci naturalnej.
+Złożoność obliczeniowa wynosi $O(n^2)$ ze względu na zagnieżdżone pętle (dla każdego z $n$ czynników wykonujemy do $n$ operacji aktualizacji).
+
+\subsection*{Implementacja}
+\begin{algorithm}
+\caption{Konwersja postaci Newtona do postaci naturalnej}
+\begin{algorithmic}[1]
+    \Require $x$: wektor węzłów ($x_0, \dots, x_n$)
+    \Require $fx$: wektor ilorazów różnicowych ($c_0, \dots, c_n$)
+    \Ensure $a$: wektor współczynników postaci naturalnej ($a_0, \dots, a_n$)
+    
+    \Function{Naturalna}{$x, fx$}
+        \State $n \gets \text{length}(fx) - 1$
+        \State $a \gets \text{copy}(fx)$ 
+        
+        \Statex
+        \For{$k \gets n$ \textbf{downto} $1$} \Comment{Iteracja po węzłach $x_{n-1}$ do $x_0$}
+            \For{$j \gets k$ \textbf{to} $n$} \Comment{Aktualizacja współczynników}
+                \State $a[j] \gets a[j] - a[j+1] \cdot x[k]$
+            \EndFor
+        \EndFor
+        
+        \State \Return $a$
+    \EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+\section*{Zadanie 4}
+\subsection*{Cel zadania}
+Celem zadania jest napisanie funkcji, która będzie interpolować zadaną funkcję f w przedziale [a, b]
+za pomocą wielomianu interpolacyjnego stopnia n w postaci Newtona. Następnie funkcja ma za zadanie rysować wykres wielomianu interpolacyjnego i interpolowanej funkcji.
+Funkcja ma przyjmować pięć argumentów:
+\begin{itemize}
+    \item f $\rightarrow$ funkcja anonimowa
+    \item a $\rightarrow$ początek przedziału
+    \item b $\rightarrow$ koniec przedziału
+    \item n $\rightarrow$ stopień wielomianu interpolacyjnego
+    \item wezly $\rightarrow$ typ węzłów: 'rownoodlegle' lub 'czebyszew'
+\end{itemize}
+W interpolacji należy użyć węzłów równoodległych, czyli: 
+\begin{center}
+    $x_{k} = a + kh$, gdzie $h = \frac{b-a}{n}$ o
+\end{center}
+lub węzłów będących zerami n + 1 wielomianu Czebyszewa.
+
+\subsection*{Idea metody}
+
+\end{document}
