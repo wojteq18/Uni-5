@@ -197,10 +197,301 @@ Funkcja ma przyjmować pięć argumentów:
 \end{itemize}
 W interpolacji należy użyć węzłów równoodległych, czyli: 
 \begin{center}
-    $x_{k} = a + kh$, gdzie $h = \frac{b-a}{n}$ o
+    $x_{k} = a + kh$, gdzie $h = \frac{b-a}{n}$ 
 \end{center}
-lub węzłów będących zerami n + 1 wielomianu Czebyszewa.
+lub węzłów będących zerami n + 1 wielomianu Czebyszewa, czyli:
+\begin{center}
+    $x_{k} = \frac{a+b}{2} + \frac{b-a}{2} \cos\left(\frac{(2k+1)\pi}{2(n+1)}\right)$
+\end{center}
 
-\subsection*{Idea metody}
+\subsection*{Implementacja}
+\begin{algorithm}[H]
+\caption{Pseudokod funkcji \texttt{rysujNnfx}}
+\begin{algorithmic}[1]
 
+\State Utwórz tablicę $x\_nodes$ o długości $n+1$
+
+\If{wezly = rownoodlegle}
+    \State $h \gets (b - a) / n$
+    \For{$k = 0$ to $n$}
+        \State $x\_nodes[k] \gets a + k \cdot h$
+    \EndFor
+\ElsIf{wezly = czebyszew}
+    \For{$k = 1$ to $n+1$}
+        \State $x\_raw \gets \cos\!\left( \frac{(2k-1)\pi}{2(n+1)} \right)$
+        \State $x\_nodes[k-1] \gets \frac{a+b}{2} + \frac{b-a}{2} \cdot x\_raw$
+    \EndFor
+\Else
+    \State Zgłoś błąd: "Nieznany typ węzłów"
+\EndIf
+
+\State $y\_nodes \gets f(x\_nodes)$  
+\State $coeffs \gets$ ilorazyRoznicowe($x\_nodes$, $y\_nodes$)
+
+\State Utwórz siatkę $x\_{plot}$ (1000 punktów na $[a,b]$)
+\State $y\_{true} \gets f(x\_{plot})$
+\State $y\_{interp} \gets$ wartości warNewton($x\_nodes$, $coeffs$, $t$) dla każdego $t$ z $x\_{plot}$
+
+\State Narysuj wykres $f(x)$
+\State Narysuj wykres $N_n(x)$ przerywaną linią
+\State Narysuj punkty $(x\_nodes, y\_nodes)$ jako węzły
+\State Ustaw etykiety osi i tytuł
+\State Wyświetl wykres
+
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+\section*{Zadanie 5}
+Celem zadania jest przetestowanie funkcji z poprzedniego zadania, na węzłach równoodległych na następujących przykładach:
+\begin{itemize}
+    \item $f(x) = e^{x}$ na przedziale [0, 1] dla n = 5, 10, 15
+    \item $f(x) = x^2 \cdot \sin(x)$ na przedziale [-1, 1] dla n = 5, 10, 15
+\end{itemize}
+
+\subsection*{Wyniki}
+Wyniki dla $f(x) = e^{x}$ na przedziale [0, 1]:
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/511.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/512.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/513.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\newpage
+Wyniki dla $f(x) = x^2 \cdot \sin(x)$ na przedziale [-1, 1]:
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/521.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/522.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=01.0\textwidth, keepaspectratio]{../Examples/523.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\subsection*{Wnioski}
+Na powyższych wykresach widać, że zarówno dla $f(x) = e^{x}$ jak i dla $f(x) = x^2 \cdot \sin(x)$, już dla ilości węzłow n = 5, wielomian interpolacyjny
+bardzo dobrze pokrywa się z wykresem funkcji. Zwiększanie ilości węzłów do n = 10 i n = 15 powoduje jedynie minimalne poprawienie dokładności interpolacji.
+Możemy na tej podstawie wysnuć wnioski, że dla tych funkcji w przedziałach [0, 1] oraz [-1, 1], węzły równoodległe są wystarczające do uzyskania dobrej jakości interpolacji już przy niewielkiej liczbie węzłów.
+
+\newpage
+\section*{Zadanie 6}
+Celem zadanie jest przetestowanie funkcji z zadania 4 na węzłach równoodległych i węzłach Czebyszewa na następujących przykładach:
+\begin{itemize}
+    \item $f(x) = |x|$ na przedziale [-1, 1] dla n = 5, 10, 15
+    \item $f(x) = \frac{1}{1 + x^{2}}$ na przedziale [-1, 1] dla n = 5, 10, 15
+\end{itemize}
+
+\subsection*{Wyniki}
+\textbf{Wyniki dla $f(x) = |x|$ na przedziale [-1, 1]:}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/611.png}
+
+    \caption{Stopień wielomianu: 5, węzły równoodległe, $f(x) = |x|$} 
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/612.png}
+
+        \caption{Stopień wielomianu: 10, węzły równoodległe, $f(x) = |x|$} 
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/613.png}
+    
+    \caption{Stopień wielomianu: 15, węzły równoodległe, $f(x) = |x|$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/621.png}
+
+    \caption{Stopień wielomianu: 5, węzły Czebyszewa, $f(x) = |x|$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/622.png}
+
+    \caption{Stopień wielomianu: 10, węzły Czebyszewa, $f(x) = |x|$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/623.png}
+
+    \caption{Stopień wielomianu: 15, węzły Czebyszewa, $f(x) = |x|$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\textbf{Wyniki dla $f(x) = \frac{1}{1 + x^{2}}$ na przedziale [-5, 5]:}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/631.png}
+
+    \caption{Stopień wielomianu: 5, węzły równoodległe, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/632.png}
+
+    \caption{Stopień wielomianu: 10, węzły równoodległe, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/633.png}
+
+    \caption{Stopień wielomianu: 15, węzły równoodległe, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/641.png}
+
+    \caption{Stopień wielomianu: 5, węzły Czebyszewa, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/642.png}
+
+    \caption{Stopień wielomianu: 10, węzły Czebyszewa, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.9\textwidth, keepaspectratio]{../Examples/643.png}
+
+    \caption{Stopień wielomianu: 15, węzły Czebyszewa, $f(x) = \frac{1}{1 + x^{2}}$} 
+
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\subsection*{Wnioski}
+Powyższe wykresy pokazują, że sytuacja w porównaniu z tą z zadania 5 jest zupełnie inna. 
+Widzimy tu znaczną różnicę pomiędzy wielomianami interpolacyjnymi a funkcjami, a zwiększenie ilości węzłów 
+nie poprawia znacznie jakości wielomianów interpolacynych.
+Dla $f(x) = |x|$ lepiej prezentuje się sytuacja, w której użyto węzłów będących zerami wielomianu Czebyszewa.
+W tej sutyacji wraz ze wzrostem stopnia wielomianu, jakość interpolacji się poprawia.
+Dla $f(x) = \frac{1}{1 + x^{2}}$
 \end{document}
