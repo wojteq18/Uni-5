@@ -489,9 +489,13 @@ Celem zadanie jest przetestowanie funkcji z zadania 4 na węzłach równoodległ
 
 \subsection*{Wnioski}
 Powyższe wykresy pokazują, że sytuacja w porównaniu z tą z zadania 5 jest zupełnie inna. 
-Widzimy tu znaczną różnicę pomiędzy wielomianami interpolacyjnymi a funkcjami, a zwiększenie ilości węzłów 
-nie poprawia znacznie jakości wielomianów interpolacynych.
-Dla $f(x) = |x|$ lepiej prezentuje się sytuacja, w której użyto węzłów będących zerami wielomianu Czebyszewa.
-W tej sutyacji wraz ze wzrostem stopnia wielomianu, jakość interpolacji się poprawia.
-Dla $f(x) = \frac{1}{1 + x^{2}}$
+Widzimy tu znaczną różnicę pomiędzy wielomianami interpolacyjnymi a funkcjami, chociaż zwiększenie ilości węzłów poprawia jakość interpolacji.
+Dla $f(x) = |x|$ i dla $f(x) = \frac{1}{1 + x^{2}}$, węzły Czebyszewa dają zauważalnie lepsze wyniki niż węzły równoodległe, szczególnie przy wyższych stopniach wielomianu.
+
+\subsection*{Efekt Rungego}
+Efekt Rungego to zjawisko, które występuje podczas interpolacji wielomianowej funkcji na równoodległych węzłach.
+Polega ono na tym, że wraz ze wzrostem stopnia wielomainu interpolacyjnego, zwłaszcza w pobliżu krawędzi przedziału interpolacji.
+W przypadku funkcji $f(x) = \frac{1}{1 + x^{2}}$, efekt Rungego jest właśnie szczególnie widoczny przy krawędziach przedziału - 
+zauważalne są tam duże odchylenia wielomianu interpolacyjnego od rzeczywistej funkcji, zwłaszcza przy wyższych stopniach wielomianu.
+Użycie węzłów Czebyszewa skutecznie pomaga zminimalizować efekt Rungego, ponieważ te węzły są gęściej rozmieszczone na krawędziach przedziału, co prowadzi do lepszej jakości interpolacji i zmniejszenia oscylacji wielomianu.
 \end{document}
