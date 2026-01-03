@@ -24,5 +24,29 @@ function run_analysis(matrix_path, vector_path, method, use_pivot, out_path)
     write_result(out_path, x, err)
 end
 
-run_analysis("/home/wojteq18/sem5/ON/Lab/Lista5/tests/Dane16_1_1/A.txt", nothing, :gauss, true, "wynik_gauss.txt")
-run_analysis("/home/wojteq18/sem5/ON/Lab/Lista5/tests/Dane16_1_1/A.txt", "/home/wojteq18/sem5/ON/Lab/Lista5/tests/Dane16_1_1/b.txt", :lu, false, "wynik_2b.txt")
+directory_names = ["Dane16_1_1", "Dane10000_1_1", "Dane50000_1_1", "Dane100000_1_1", "Dane500000_1_1", "Dane750000_1_1", "Dane1000000_1_1"]
+
+for directory_name in directory_names
+    A_input_path = "/home/wojteq18/sem5/ON/Lab/Lista5/tests/$(directory_name)/A.txt"
+    b_input_path = "/home/wojteq18/sem5/ON/Lab/Lista5/tests/$(directory_name)/b.txt"
+    output_path = "../results/gauss_result_with_b/wynik_gauss_$(directory_name).txt"
+    run_analysis(A_input_path, b_input_path, :gauss, false, output_path)
+end
+
+for directory_name in directory_names
+    A_input_path = "/home/wojteq18/sem5/ON/Lab/Lista5/tests/$(directory_name)/A.txt"
+    output_path = "../results/gauss_result_without_b/wynik_gauss_$(directory_name).txt"
+    run_analysis(A_input_path, nothing, :gauss, true, output_path)
+end
+
+for directory_name in directory_names
+    input_path = "/home/wojteq18/sem5/ON/Lab/Lista5/tests/$(directory_name)/A.txt"
+    output_path = "../results/2a_results/wynik_$(directory_name).txt"
+    run_analysis(input_path, nothing, :lu, false, output_path)
+end
+
+for directory_name in directory_names
+    input_path = "/home/wojteq18/sem5/ON/Lab/Lista5/tests/$(directory_name)/A.txt"
+    output_path = "../results/2b_results/wynik_$(directory_name).txt"
+    run_analysis(input_path, nothing, :lu, false, output_path)
+end
