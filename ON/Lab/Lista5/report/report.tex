@@ -1,0 +1,179 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage[margin=1in]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\usepackage{booktabs} % Lepsza jakość tabel
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable}  % Dla tabel wielostronicowych
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{amsmath}
+\usepackage{siunitx} 
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newcommand{\To}{\textbf{to }}
+\newcommand{\DownTo}{\textbf{down to }}
+\usepackage{amsmath}
+\sisetup{
+    output-exponent-marker = e,
+    bracket-numbers = false,
+    group-separator = {\,}, 
+    scientific-notation = true
+}
+
+% Inne
+\usepackage{hyperref} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Obliczenia Naukowe - Lista 1},
+    pdfauthor={Wojciech Typer},
+}
+
+\title{Sprawozdanie z Laboratorium\\Obliczenia Naukowe - Lista 5}
+\author{Wojciech Typer}
+
+\begin{document}
+\maketitle
+\section*{Zadanie 1}
+\subsection*{Cel zadania}
+Celem zadania jest napisanie funkcji rozwiązującej układ $ax = b$ metodą eliminacji Gaussa, 
+uwzgledniając specyficzną postać macierzy $A$, która jest macierzą rzadką:
+\[
+A = 
+\begin{pmatrix}
+A_1    & C_1    & 0      & 0      & 0      & \dots  & 0      \\
+B_2    & A_2    & C_2    & 0      & 0      & \dots  & 0      \\
+0      & B_3    & A_3    & C_3    & 0      & \dots  & 0      \\
+\vdots & \ddots & \ddots & \ddots & \ddots & \ddots & \vdots \\
+0      & \dots  & 0      & B_{v-2} & A_{v-2} & C_{v-2} & 0      \\
+0      & \dots  & 0      & 0      & B_{v-1} & A_{v-1} & C_{v-1} \\
+0      & \dots  & 0      & 0      & 0      & B_v     & A_v
+\end{pmatrix},
+\]
+dla dwóch wariantów:
+\begin{itemize}
+    \item bez wyboru elementu głównego
+    \item z częściowym wyborem elementu głównego
+\end{itemize}
+
+\subsection*{Struktura danych i złożoność obliczeniowa} Macierz A jest macierzą rzadką o specyficznej strukturze blokowej, 
+więc wystarczy tylko przechowywać jej niezerowe elementy. W programie wykorzystano strukturę słownika, co pozwala na alokację pamięci 
+wyłącznie dla elementów niezerowych, redukując złożoność pamięciową do $O(n \cdot l)$. Złożoność czasowa procesów eliminacji i dekompozycji 
+wynosi $O(n \cdot l^2)$, co dla małych, stałych wartości l jest złożonością liniową O(n). Wynika to z faktu, że pętle algorytmu ograniczają się 
+jedynie do niezerowego pasma macierzy, pomijając operacje na pozostałych elementach. Pozwala to na stabilne i szybkie rozwiązanie układu nawet dla 
+bardzo dużych wartości n.
+
+\newpage
+\subsection*{Implementacja}
+
+\subsubsection*{Idea algorytmu eliminacji Gaussa bez wyboru elementu głównego}
+Algorytm to „inteligentna” wersja eliminacji Gaussa, 
+która wykorzystuje fakt, że macierz ma wartości inne niż zero tylko blisko swojej głównej przekątnej. 
+Zamiast przeliczać całe wiersze i kolumny, program skupia się wyłącznie na wąskim pasmie o szerokości l, całkowicie ignorując ogromne obszary 
+wypełnione zerami. Dzięki temu unikamy wykonywania milionów zbędnych działań (mnożenia przez zero), co pozwala błyskawicznie rozwiązać układ równań. 
+Na samym końcu wynik x wyliczany jest od tyłu, również przy wykorzystaniu jedynie tych elementów, które znajdują się w pasmie.
+
+\begin{algorithm}
+\caption{Eliminacja Gaussa dla macierzy blokowej}
+\begin{algorithmic}[1]
+\Procedure{SolveGauss}{$n, l, A, b$}
+    \For{$k \gets 1$ \textbf{ to } $n-1$}
+        \State $last\_row \gets \min(k + l, n)$
+        
+        \For{$i \gets k+1$ \textbf{ to } $last\_row$}
+            \If{$|A_{k,k}| < \epsilon$}
+                \State \Return \textbf{error}("Zero na przekątnej")
+            \EndIf
+            
+            \State $factor \gets A_{i,k} / A_{k,k}$
+            \State $A_{i,k} \gets 0$
+            
+            \For{$j \gets k+1$ \textbf{ to } $\min(k + l, n)$}
+                \State $A_{i,j} \gets A_{i,j} - factor \cdot A_{k,j}$
+            \EndFor
+            \State $b_i \gets b_i - factor \cdot b_k$
+        \EndFor
+    \EndFor
+
+    \State $x \gets \text{new vector of size } n$
+    \For{$i \gets n$ \textbf{ down to } $1$}
+        \State $sum\_val \gets 0$
+        \For{$j \gets i+1$ \textbf{ to } $\min(i + l, n)$}
+            \State $sum\_val \gets sum\_val + A_{i,j} \cdot x_j$
+        \EndFor
+        \State $x_i \gets (b_i - sum\_val) / A_{i,i}$
+    \EndFor
+    \State \Return $x$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+
+\subsubsection*{Idea eliminacji Gaussa z częściowym wyborem elementu głównego} Ta wersja algorytmu jest bezpieczniejsza dla wyników, 
+ponieważ w każdym kroku szuka największej możliwej liczby w aktualnej kolumnie (tzw. elementu głównego) i zamienia wiersze tak, aby to ona 
+znalazła się na przekątnej. Dzięki temu unikamy dzielenia przez bardzo małe liczby, co drastycznie poprawia dokładność obliczeń i chroni przed 
+błędami zaokrągleń.
+
+\begin{algorithm}
+\caption{Eliminacja Gaussa z częściowym wyborem elementu głównego}
+\begin{algorithmic}[1]
+\Procedure{SolveGaussPivot}{$n, l, A, b$}
+    \State $p \gets [1, 2, \dots, n]$ \Comment{Inicjalizacja wektora permutacji}
+    
+    \For{$k \gets 1$ \textbf{ to } $n-1$}
+        \State $max\_val \gets 0.0$
+        \State $pivot\_row \gets k$
+        
+        \Comment{Wybór elementu głównego w obrębie pasma $l$}
+        \For{$i \gets k$ \textbf{ to } $\min(k + l, n)$}
+            \If{$|A_{p_i, k}| > max\_val$}
+                \State $max\_val \gets |A_{p_i, k}|$
+                \State $pivot\_row \gets i$
+            \EndIf
+        \EndFor
+        
+        \State $\text{swap}(p_k, p_{pivot\_row})$ \Comment{Zamiana wierszy w wektorze permutacji}
+        
+        \For{$i \gets k+1$ \textbf{ to } $\min(k + l, n)$}
+            \State $factor \gets A_{p_i, k} / A_{p_k, k}$
+            \State $A_{p_i, k} \gets 0.0$
+            
+            \Comment{Aktualizacja wiersza - pasmo może wzrosnąć do $2l$}
+            \For{$j \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
+                \State $A_{p_i, j} \gets A_{p_i, j} - factor \cdot A_{p_k, j}$
+            \EndFor
+            \State $b_{p_i} \gets b_{p_i} - factor \cdot b_{p_k}$
+        \EndFor
+    \EndFor
+
+    \State $x \gets \text{nowy wektor rozmiaru } n$
+    \Comment{Podstawienie wsteczne z uwzględnieniem permutacji i pasma $2l$}
+    \For{$i \gets n$ \textbf{ down to } $1$}
+        \State $sum\_val \gets 0.0$
+        \For{$j \gets i+1$ \textbf{ to } $\min(i + 2l, n)$}
+            \State $sum\_val \gets sum\_val + A_{p_i, j} \cdot x_j$
+        \EndFor
+        \State $x_i \gets (b_{p_i} - sum\_val) / A_{p_i, i}$
+    \EndFor
+    
+    \State \Return $x$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+\end{document}
