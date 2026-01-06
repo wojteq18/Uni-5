@@ -71,12 +71,67 @@ dla dwóch wariantów:
     \item z częściowym wyborem elementu głównego
 \end{itemize}
 
-\subsection*{Struktura danych i złożoność obliczeniowa}
-W celu maksymalizacji wydajności obliczeniowej zrezygnowano z ogólnych struktur danych (słowników) na rzecz dedykowanej \textbf{struktury blokowej} (\texttt{BlockMatrix}). Pozwala ona na przechowywanie macierzy rzadkiej jako sekwencji małych, gęstych macierzy dla bloków diagonalnych $A_k$ oraz wyspecjalizowanych struktur dla rzadkich bloków brzegowych $B_k$ i $C_k$. 
-
-Dzięki temu dane są przechowywane w sposób ciągły w pamięci, co drastycznie poprawia wykorzystanie pamięci podręcznej procesora (cache locality). Złożoność pamięciowa wynosi $O(v \cdot l^2)$, co przy stałym $l$ jest złożonością liniową $O(n)$. Złożoność czasowa procesów eliminacji i dekompozycji wynosi $O(n \cdot l^2)$, co dla małych, stałych wartości $l$ również sprowadza się do $O(n)$.
+\subsection*{Funkcje pomocnicze}
+\begin{itemize}
+    \item \texttt{lu\_dense!} – wykonuje dekompozycję LU macierzy gęstej bez wyboru elementu głównego.
+    \item \texttt{lu\_dense\_pivot!} – wykonuje dekompozycję LU macierzy gęstej z częściowym wyborem elementu głównego.
+    \item \texttt{solve\_l!} – realizuje podstawienie w przód ($Ly=b$) dla macierzy dolnotrójkątnej, uwzględniając opcjonalną permutację wektora $b$.
+    \item \texttt{solve\_u!} – realizuje podstawienie wsteczne ($Ux=y$) dla macierzy górnotrójkątnej.
+    \item \texttt{compute\_W\_matrix} – oblicza macierz pomocniczą $W$, definiowaną jako $W = A_k^{-1} C_k$, gdzie $C_k$ to macierz diagonalna.
+    \item \texttt{mul\_sub\_B\_W!} – wykonuje aktualizację kolejnego bloku diagonalnego według wzoru $A_{k+1} = A_{k+1} - B_k \cdot W$.
+\end{itemize}
 
 \newpage
+\subsection*{Struktura danych}
+Do zaimplementowania algorytmu użyto następującej struktury danych:
+\begin{algorithm}
+\caption{Definicja struktur danych macierzy blokowej}
+\begin{algorithmic}[1]
+
+\State \textbf{struct} \text{BorderMatrix}
+    \State \quad $l$: rozmiar bloku
+    \State \quad $top\_row$: wektor przechowujący pierwszy wiersz bloku
+    \State \quad $right\_column$: wektor przechowujący ostatnią kolumnę bloku
+\State \textbf{end struct}
+
+\State
+
+\State \textbf{struct} \text{CMatrix}
+    \State \quad $l$: rozmiar bloku
+    \State \quad $diag$: wektor przechowujący przekątną bloku
+\State \textbf{end struct}
+
+\State
+
+\State \textbf{struct} \text{BlockMatrix}
+    \State \quad $l$: rozmiar bloku $l \times l$
+    \State \quad $v$: liczba bloków w macierzy ($n = v \cdot l$)
+    \State \quad $A$: wektor gęstych bloków diagonalnych
+    \State \quad $B$: wektor bloków rzadkich typu BorderMatrix
+    \State \quad $C$: wektor bloków rzadkich typu CMatrix
+\State \textbf{end struct}
+
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{BorderMatrix} -- przechowuje rzadki blok znajdujący się pod diagonalą.
+\begin{itemize}
+    \item \texttt{top\_row}: zawiera pierwszy wiersz bloku, odpowiedzialny za powiązanie z poprzednim blokiem diagonalnym.
+    \item \texttt{right\_column}: przechowuje ostatnią kolumnę, istotną przy redukcji elementu brzegowego.
+\end{itemize}
+
+\textbf{CMatrix} -- przechowuje rzadki blok znajdujący się nad diagonalą.
+\begin{itemize}
+    \item \texttt{diag}: zawiera tylko elementy na przekątnej bloku, co redukuje pamięć z $O(l^2)$ do $O(l)$.
+\end{itemize}
+
+\textbf{BlockMatrix} -- główny kontener macierzy, zapewniający liniową złożoność $O(n)$.
+\begin{itemize}
+    \item \texttt{l}, \texttt{v}: wymiary określające strukturę blokową macierzy.
+    \item \texttt{A}: wektor macierzy gęstych, na których wykonywana jest dekompozycja LU.
+    \item \texttt{B}, \texttt{C}: wektory bloków rzadkich, które minimalizują liczbę operacji na zerach.
+\end{itemize}
+
 \subsection*{Implementacja}
 
 \subsubsection*{Idea algorytmu eliminacji Gaussa bez wyboru elementu głównego}
@@ -93,12 +148,12 @@ pozwala znacząco ograniczyć liczbę operacji obliczeniowych w porównaniu z
 klasyczną eliminacją Gaussa. Rozwiązanie końcowe wyznaczane jest w etapie
 podstawienia wstecznego, również z wykorzystaniem struktury blokowej macierzy.
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{Eliminacja Gaussa dla macierzy blokowej (Zadanie 1a)}
 \begin{algorithmic}[1]
 \Procedure{SolveBlockGauss}{$v, l, A, B, C, b$}
     \State $x \gets \text{copy}(b)$
-    \State $As \gets \text{deepcopy}(A)$
+    \State $As \gets \text{copy}(A)$
     
     \State \Comment{ETAP 1: Eliminacja w przód}
     \For{$k \gets 1$ \textbf{ to } $v$}
@@ -135,8 +190,14 @@ podstawienia wstecznego, również z wykorzystaniem struktury blokowej macierzy.
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
-
-\newpage
+\textbf{Analiza złożoności obliczeniowej:}
+\begin{itemize}
+    \item \textbf{Złożoność czasowa:} Każdy blok diagonalny wymaga $O(l^3)$ operacji
+    na dekompozycję LU oraz $O(l^2)$ operacji na aktualizację sąsiednich bloków.
+    Dla $v$ bloków, całkowita złożoność czasowa wynosi $O(v \cdot l^3) = O(n
+    \cdot l^2)$. Dla małych, stałych wartości $l$, złożoność upraszcza się do
+    $O(n)$.
+\end{itemize}
 
 \subsubsection*{Idea eliminacji Gaussa z częściowym wyborem elementu głównego}
 Wersja algorytmu z częściowym wyborem elementu głównego poprawia stabilność
@@ -152,12 +213,12 @@ małe liczby, ogranicza wpływ błędów zaokrągleń i znacząco poprawia dokł
 wyników, zachowując jednocześnie blokową strukturę macierzy.
 
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{Eliminacja Gaussa dla macierzy blokowej z częściowym wyborem elementu głównego}
 \begin{algorithmic}[1]
 \Procedure{SolveBlockGaussPivot}{$v, l, A, B, C, b$}
     \State $x \gets \text{copy}(b)$
-    \State $As \gets \text{deepcopy}(A)$
+    \State $As \gets \text{copy}(A)$
     \State $P \gets \text{array of permutations}$
 
     \State \Comment{ETAP 1: Eliminacja w przód}
@@ -198,6 +259,15 @@ wyników, zachowując jednocześnie blokową strukturę macierzy.
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\textbf{Analiza złożoności obliczeniowej:}
+\begin{itemize}
+    \item \textbf{Złożoność czasowa:} Dodatkowy koszt związany z wyszukiwaniem
+    elementu głównego w każdym bloku oraz zastosowaniem permutacji podczas
+    rozwiązywania układu nie wpływa znacząco na złożoność czasową. Operacje na blokach są ograniczone do sąsiednich
+    bloków diagonalnych, więc złożoność czasowa pozostaje $O(v
+    \cdot l^3) \sim O(n \cdot l^2)$, choć z większymi stałymi ukrytymi w notacji
+    O w porównaniu do wariantu bez pivotowania.
+\end{itemize}    
 
 
 \newpage
@@ -232,18 +302,12 @@ macierzy $A$, która jest macierzą rzadką (taka sama jak w zadaniu 1), dla dw�
 \subsubsection*{LU bez wyboru elementu głównego}
 Pętla zewnętrzna algorytmu przebiega po wszystkich blokach diagonalnych \(k = 1, \dots, v\), gdzie \(v = n / l\). 
 W każdym bloku wykonywany jest rozkład LU o złożoności \(O(l^3)\) dla bloku diagonalnego \(A_k\).  
-
-Dodatkowo, dla każdego bloku aktualizowany jest następny blok diagonalny przy użyciu macierzy granicznej \(B_k\) i macierzy \(W\), 
-co wymaga około \(O(l^2)\) operacji na blok. Suma wszystkich operacji dla wszystkich bloków daje całkowitą złożoność czasową:
+Suma wszystkich operacji dla wszystkich bloków daje całkowitą złożoność czasową:
 \[
 O(v \cdot l^3) = O\Big(\frac{n}{l} \cdot l^3\Big) = O(n \cdot l^2).
 \]
 
 Dla małych, stałych wartości \(l\), złożoność upraszcza się do \(O(n)\), co oznacza praktycznie liniowy czas działania względem rozmiaru macierzy \(n\).  
-
-Złożoność pamięciowa wynosi \(O(v \cdot l^2) = O(n \cdot l)\), ponieważ przechowywane są jedynie bloki diagonalne \(A_k\), macierze graniczne \(B_k\) oraz przekątne \(C_k\), 
-a nie pełna macierz.
-
 
 \subsubsection*{Blokowa LU z częściowym wyborem elementu głównego}
 W tym wariancie, dla każdego bloku diagonalnego, wybierany jest element
@@ -335,7 +399,7 @@ Analogicznie, podstawianie wsteczne po blokach wykorzystuje macierze U i korekty
 Każdy blok wymaga $O(l^2)$ operacji, więc całkowita złożoność dla wszystkich bloków wynosi $O(v \cdot l^2) = O(n \cdot l)$, przy czym pamięć jest zużywana wyłącznie na bloki diagonalne, graniczne i przekątne.
 
 \subsection*{Idea metody i implementacja}
-Metoda wykorzystuje wcześniej obliczony blokowy rozkład LU z ewentualnym częściowym wyborem elementu głównego w każdym bloku. 
+Metoda wykorzystuje wcześniej obliczony blokowy rozkład LU. 
 Rozwiązywanie układu $Ax = b$ sprowadza się do dwóch etapów: podstawiania w przód $Ly = Pb$ oraz podstawiania wstecz $Ux = y$. 
 Dzięki strukturze blokowej w każdym kroku operujemy wyłącznie na elementach w bieżącym i sąsiednim bloku, co ogranicza liczbę operacji do $O(l^2)$ na blok i eliminuje konieczność przetwarzania całej macierzy. 
 Permutacje $p_k$ w blokach diagonalnych zapewniają stabilność numeryczną, a macierze B i C odpowiadają za wpływ sąsiednich bloków na wynik.
