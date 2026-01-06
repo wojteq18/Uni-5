@@ -175,5 +175,193 @@ błędami zaokrągleń.
 \end{algorithmic}
 \end{algorithm}
 
+\newpage
+\begin{figure}[H] 
+    
+    \centering 
 
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/time1.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/err1.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\subsection*{Wnioski}
+Analiza wykresu czasu wykonania, widzimy, że oba warianty algorytmu eliminacji Gaussa wykazują liniową złożoność czasową względem rozmiaru macierzy n.
+Metoda eliminacji Gaussa z częściowym wyborem elementu głównego jest nieco wolniejsza względem dodatkowych operacji związanych z wyborem elementu głównego i zamianą wierszy.
+Wykres ukazujący błędy względne pokazuje, że metoda z wyborem elementu głównego jest znacznie bardziej stabilna numerycznie - wynika to z faktu, że unika dzielenia przez bardzo małe liczby, co minimalizuje błędy zaokrągleń.
+Podczas analizy macierzy gorzej uwarunkowanych, metoda bez wyboru elementu głównego wykazuje znacznie większe błędy, co potwierdza jej podatność na niestabilność numeryczną.
+\newpage
+
+\section*{Zadanie 2}
+\subsection*{Cel zadania}
+Celem zadania jest napisanie funkcji wyznaczających rozkład $LU$ macierzy $A$ metodą eliminacji Gaussa, uwzględniając specyficzną postać
+macierzy $A$, która jest macierzą rzadką (taka sama jak w zadaniu 1), dla dwóch wariantów:
+\begin{itemize}
+    \item bez wyboru elementu głównego
+    \item z częściowym wyborem elementu głównego
+\end{itemize}
+
+\subsection*{Analiza złożoności obliczeniowej}
+\subsubsection*{Bez wyboru elementu głównego}
+Pętla zewnętrzna przebiega n-1 razy, pętle wierszy i kolumn są ograniczone zakresem $min(k + l ,n)$, co skutkuje złożonością maksymalnie l dla każdej z nich.
+Koszt operacji dostępu do słownika (get, set) jest stały $O(1)$, więc całkowita złożoność czasowa algorytmu wynosi $O(n \cdot l^2)$.
+Dla małych, stałych wartości l, złożoność ta upraszcza się do liniowej O(n). Złożoność pamięciowa wynosi $O(n \cdot l)$ ze względu na przechowywanie
+niezerowych elementów macierzy w strukturze słownika.
+
+\subsubsection*{Z częściowym wyborem elementu głównego}
+W tym wariancie pętla zewnętrzna również wykonuje się n-1 razy. Dodatkowym kosztem w każdym kroku jest wyszukiwanie elementu głównego w obrębie pasma l,
+co dodaje kolejną pętlę o złożoności O(l). Kluczową różnicą jest rozszerzenie pasma macierzy do 2l podczas aktualizacji wierszy po zamianie.
+W rezultacie złożoność czasowa tego wariantu wynosi $O(n \cdot l^2)$, podobnie jak w poprzednim przypadku, ale z większymi stałymi ukrytymi w notacji O.
+Złożoność pamięciowa pozostaje $O(n \cdot l)$, ponieważ nadal przechowujemy tylko niezerowe elementy macierzy.
+
+\subsection*{Implementacja}
+\begin{algorithm}
+\caption{Dekompozycja LU macierzy pasmowej (bez wyboru elementu głównego)}
+\begin{algorithmic}[1]
+\Procedure{LUDecomposition}{$n, l, A$}
+    \For{$k \gets 1$ \textbf{ to } $n-1$}
+        \For{$i \gets k+1$ \textbf{ to } $\min(k + l, n)$}
+            \State $factor \gets A_{i, k} / A_{k, k}$
+            \State $A_{i, k} \gets factor$ \Comment{Zapisanie mnożnika macierzy $L$ w miejscu zera}
+            
+            \For{$j \gets k+1$ \textbf{ to } $\min(k + l, n)$}
+                \State $val \gets A_{i, j} - factor \cdot A_{k, j}$
+                \If{$val \neq 0.0$}
+                    \State $A_{i, j} \gets val$ \Comment{Aktualizacja elementu macierzy $U$}
+                \Else
+                    \State \text{usuń } $A_{i, j}$ \Comment{Zarządzanie rzadkością słownika}
+                \EndIf
+            \EndFor
+        \EndFor
+    \EndFor
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}
+\caption{Dekompozycja LU macierzy pasmowej z częściowym wyborem elementu głównego}
+\begin{algorithmic}[1]
+\Procedure{LUDecompositionPivot}{$n, l, A$}
+    \State $p \gets [1, 2, \dots, n]$ \Comment{Inicjalizacja wektora permutacji}
+    
+    \For{$k \gets 1$ \textbf{ to } $n-1$}
+        \State $max\_val \gets 0.0$
+        \State $pivot\_idx \gets k$
+        
+        \Comment{Poszukiwanie pivota w kolumnie $k$ (zakres $l$)}
+        \For{$i \gets k$ \textbf{ to } $\min(k + l, n)$}
+            \If{$|A_{p_i, k}| > max\_val$}
+                \State $max\_val \gets |A_{p_i, k}|$
+                \State $pivot\_idx \gets i$
+            \EndIf
+        \EndFor
+        
+        \State $\text{swap}(p_k, p_{pivot\_idx})$ \Comment{Zamiana wierszy w wektorze permutacji}
+        
+        \For{$i \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
+            \State $factor \gets A_{p_i, k} / A_{p_k, k}$
+            \State $A_{p_i, k} \gets factor$
+            
+            \For{$j \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
+                \State $val \gets A_{p_i, j} - factor \cdot A_{p_k, j}$
+                \If{$val \neq 0.0$}
+                    \State $A_{p_i, j} \gets val$
+                \Else
+                    \State \text{usuń } $A_{p_i, j}$
+                \EndIf
+            \EndFor
+        \EndFor
+    \EndFor
+    
+    \State \Return $p$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/time2.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/err2.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\subsection*{Wnioski}
+Oba warianty algorytmu LU wykazują liniową złożoność czasową $O(n)$ względem rozmiaru macierzy. Metoda z częściowym wyborem elementu głównego jest wolniejsza ze względu na narzut związany z wyszukiwaniem pivota oraz operacje na rozszerzonym pasmie ($2l$ zamiast $l$). Zapewnia ona jednak znacznie wyższą stabilność numeryczną, utrzymując błąd względny na stałym poziomie precyzji maszynowej ($10^{-16}$), podczas gdy w wariancie bez pivota błąd ten narasta wraz z rozmiarem macierzy do poziomu $10^{-12}$.
+
+\newpage
+\section*{Zadanie 3}
+\subsection*{Cel zadania}
+Celem zadania jest napsianie funkcji rozwiązujących układ równań $Ax = b$ wykorzystując rozkład $LU$ z zadania 2, uwzględniając specyficzną postać macierzy $A$, która jest macierzą rzadką (taka sama jak w zadaniu 1).
+
+\subsection*{Złożoność obliczeniowa}
+\subsubsection*{Podstawienie wprzód}
+Pętla zewnętrzna wykonuje się n razy, pętla wewnętrzna ykonuje się maksymalnie 2l razy, 
+zatem złożoność obliczeniowa podstawienia wprzód wynosi $O(n \cdot l)$.
+
+\subsubsection*{Podstawienie wstecz}
+Pętla zewnętrzna wykonuje się n razy, pętla wewnętrzna wykonuje się maksymalnie 2l razy, 
+zatem złożoność obliczeniowa podstawienia wstecz wynosi $O(n \cdot l)$.
+
+\newpage
+\subsection*{Idea metody i implementacja}
+Ideą metody jest wykorzystanie obliczonego wcześniej rozkładu macierzy na czynniki trójkątne (L i U) do zamiany problemu
+$Ax = b$ na dwa proste układy trójkątne. Dzięki strukturze pasmowej, w każdym kroku sumujemy tylko 2l sąsiednich elementów, 
+co eliminuje konieczność operowania na całej macierzy.
+
+\begin{algorithm}
+\caption{Rozwiązywanie układu LU dla macierzy pasmowej}
+\begin{algorithmic}[1]
+\Procedure{SolveLU}{$n, l, A, b, p$}
+    \State $B \gets (p = \text{null}) ? l : 2l$ \Comment{Ustalenie szerokości pasma}
+    \State $y \gets \text{nowy wektor rozmiaru } n$
+    
+    \Comment{1. Podstawianie w przód: $Ly = Pb$}
+    \For{$i \gets 1$ \textbf{ to } $n$}
+        \State $idx \gets (p = \text{null}) ? i : p_i$
+        \State $sum \gets 0.0$
+        \For{$j \gets \max(1, i - B)$ \textbf{ to } $i - 1$}
+            \State $sum \gets sum + A_{idx, j} \cdot y_j$
+        \EndFor
+        \State $y_i \gets b_{idx} - sum$
+    \EndFor
+
+    \State $x \gets \text{nowy wektor rozmiaru } n$
+    \Comment{2. Podstawianie wsteczne: $Ux = y$}
+    \For{$i \gets n$ \textbf{ down to } $1$}
+        \State $idx \gets (p = \text{null}) ? i : p_i$
+        \State $sum \gets 0.0$
+        \For{$j \gets i + 1$ \textbf{ to } $\min(i + B, n)$}
+            \State $sum \gets sum + A_{idx, j} \cdot x_j$
+        \EndFor
+        \State $x_i \gets (y_i - sum) / A_{idx, i}$
+    \EndFor
+    
+    \State \Return $x$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
 \end{document}
