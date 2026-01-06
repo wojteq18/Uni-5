@@ -6,6 +6,8 @@
 \usepackage[polish]{babel}
 \usepackage[margin=1in]{geometry}
 
+\usepackage{algorithm} 
+\usepackage{algpseudocode}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -69,52 +71,65 @@ dla dwóch wariantów:
     \item z częściowym wyborem elementu głównego
 \end{itemize}
 
-\subsection*{Struktura danych i złożoność obliczeniowa} Macierz A jest macierzą rzadką o specyficznej strukturze blokowej, 
-więc wystarczy tylko przechowywać jej niezerowe elementy. W programie wykorzystano strukturę słownika, co pozwala na alokację pamięci 
-wyłącznie dla elementów niezerowych, redukując złożoność pamięciową do $O(n \cdot l)$. Złożoność czasowa procesów eliminacji i dekompozycji 
-wynosi $O(n \cdot l^2)$, co dla małych, stałych wartości l jest złożonością liniową O(n). Wynika to z faktu, że pętle algorytmu ograniczają się 
-jedynie do niezerowego pasma macierzy, pomijając operacje na pozostałych elementach. Pozwala to na stabilne i szybkie rozwiązanie układu nawet dla 
-bardzo dużych wartości n.
+\subsection*{Struktura danych i złożoność obliczeniowa}
+W celu maksymalizacji wydajności obliczeniowej zrezygnowano z ogólnych struktur danych (słowników) na rzecz dedykowanej \textbf{struktury blokowej} (\texttt{BlockMatrix}). Pozwala ona na przechowywanie macierzy rzadkiej jako sekwencji małych, gęstych macierzy dla bloków diagonalnych $A_k$ oraz wyspecjalizowanych struktur dla rzadkich bloków brzegowych $B_k$ i $C_k$. 
+
+Dzięki temu dane są przechowywane w sposób ciągły w pamięci, co drastycznie poprawia wykorzystanie pamięci podręcznej procesora (cache locality). Złożoność pamięciowa wynosi $O(v \cdot l^2)$, co przy stałym $l$ jest złożonością liniową $O(n)$. Złożoność czasowa procesów eliminacji i dekompozycji wynosi $O(n \cdot l^2)$, co dla małych, stałych wartości $l$ również sprowadza się do $O(n)$.
 
 \newpage
 \subsection*{Implementacja}
 
 \subsubsection*{Idea algorytmu eliminacji Gaussa bez wyboru elementu głównego}
-Algorytm to „inteligentna” wersja eliminacji Gaussa, 
-która wykorzystuje fakt, że macierz ma wartości inne niż zero tylko blisko swojej głównej przekątnej. 
-Zamiast przeliczać całe wiersze i kolumny, program skupia się wyłącznie na wąskim pasmie o szerokości l, całkowicie ignorując ogromne obszary 
-wypełnione zerami. Dzięki temu unikamy wykonywania milionów zbędnych działań (mnożenia przez zero), co pozwala błyskawicznie rozwiązać układ równań. 
-Na samym końcu wynik x wyliczany jest od tyłu, również przy wykorzystaniu jedynie tych elementów, które znajdują się w pasmie.
+Algorytm jest wariantem eliminacji Gaussa dostosowanym do macierzy o strukturze
+blokowo-trójdiagonalnej. Wykorzystuje on fakt, że niezerowe elementy macierzy
+występują wyłącznie w blokach diagonalnych oraz w ich bezpośrednim sąsiedztwie.
+Dzięki temu eliminacja wykonywana jest jedynie na niewielkich blokach macierzy,
+a nie na całej macierzy jednocześnie.
+
+Na każdym etapie przeprowadzany jest rozkład LU bloku diagonalnego, bez
+dokonywania zamian wierszy. Uzyskane czynniki służą do eliminacji wpływu
+sąsiednich bloków oraz do modyfikacji prawej strony układu. Takie podejście
+pozwala znacząco ograniczyć liczbę operacji obliczeniowych w porównaniu z
+klasyczną eliminacją Gaussa. Rozwiązanie końcowe wyznaczane jest w etapie
+podstawienia wstecznego, również z wykorzystaniem struktury blokowej macierzy.
 
 \begin{algorithm}
-\caption{Eliminacja Gaussa dla macierzy blokowej}
+\caption{Eliminacja Gaussa dla macierzy blokowej (Zadanie 1a)}
 \begin{algorithmic}[1]
-\Procedure{SolveGauss}{$n, l, A, b$}
-    \For{$k \gets 1$ \textbf{ to } $n-1$}
-        \State $last\_row \gets \min(k + l, n)$
+\Procedure{SolveBlockGauss}{$v, l, A, B, C, b$}
+    \State $x \gets \text{copy}(b)$
+    \State $As \gets \text{deepcopy}(A)$
+    
+    \State \Comment{ETAP 1: Eliminacja w przód}
+    \For{$k \gets 1$ \textbf{ to } $v$}
+        \State \text{LU\_Dense}($As_{k}$)
+        \State $start \gets (k-1) \cdot l + 1$
+        \State $end \gets k \cdot l$
+        \State \text{Solve\_L}($As_{k}, x_{start:end}$)
         
-        \For{$i \gets k+1$ \textbf{ to } $last\_row$}
-            \If{$|A_{k,k}| < \epsilon$}
-                \State \Return \textbf{error}("Zero na przekątnej")
-            \EndIf
+        \If{$k < v$}
+            \State $W \gets \text{Compute\_W}(As_{k}, C_{k})$
+            \State $As_{k+1} \gets As_{k+1} - B_{k} \cdot W$
             
-            \State $factor \gets A_{i,k} / A_{k,k}$
-            \State $A_{i,k} \gets 0$
+            \State $z \gets \text{copy}(x_{start:end})$
+            \State \text{Solve\_U}($As_{k}, z$)
             
-            \For{$j \gets k+1$ \textbf{ to } $\min(k + l, n)$}
-                \State $A_{i,j} \gets A_{i,j} - factor \cdot A_{k,j}$
-            \EndFor
-            \State $b_i \gets b_i - factor \cdot b_k$
-        \EndFor
+            \State $ns \gets k \cdot l + 1$
+            \State $ne \gets (k+1) \cdot l$
+            \State $x_{ns:ne} \gets x_{ns:ne} - B_{k} \cdot z$
+        \EndIf
     \EndFor
 
-    \State $x \gets \text{new vector of size } n$
-    \For{$i \gets n$ \textbf{ down to } $1$}
-        \State $sum\_val \gets 0$
-        \For{$j \gets i+1$ \textbf{ to } $\min(i + l, n)$}
-            \State $sum\_val \gets sum\_val + A_{i,j} \cdot x_j$
-        \EndFor
-        \State $x_i \gets (b_i - sum\_val) / A_{i,i}$
+    \State \Comment{ETAP 2: Podstawienie wsteczne}
+    \State \text{Solve\_U}($As_{v}, x_{(v-1)l+1 : vl}$)
+    
+    \For{$k \gets v-1$ \textbf{ down to } $1$}
+        \State $r\_k \gets (k-1)l+1 : kl$
+        \State $r\_n \gets kl+1 : (k+1)l$
+        \State $corr \gets C_{k} \cdot x_{r\_n}$
+        \State \text{Solve\_L}($As_{k}, corr$)
+        \State $x_{r\_k} \gets x_{r\_k} - corr$
+        \State \text{Solve\_U}($As_{k}, x_{r\_k}$)
     \EndFor
     \State \Return $x$
 \EndProcedure
@@ -123,84 +138,85 @@ Na samym końcu wynik x wyliczany jest od tyłu, również przy wykorzystaniu je
 
 \newpage
 
-\subsubsection*{Idea eliminacji Gaussa z częściowym wyborem elementu głównego} Ta wersja algorytmu jest bezpieczniejsza dla wyników, 
-ponieważ w każdym kroku szuka największej możliwej liczby w aktualnej kolumnie (tzw. elementu głównego) i zamienia wiersze tak, aby to ona 
-znalazła się na przekątnej. Dzięki temu unikamy dzielenia przez bardzo małe liczby, co drastycznie poprawia dokładność obliczeń i chroni przed 
-błędami zaokrągleń.
+\subsubsection*{Idea eliminacji Gaussa z częściowym wyborem elementu głównego}
+Wersja algorytmu z częściowym wyborem elementu głównego poprawia stabilność
+numeryczną obliczeń. Na każdym etapie eliminacji, osobno dla każdego bloku
+diagonalnego, wybierany jest element o największej wartości bezwzględnej w
+aktualnej kolumnie, który następnie trafia na przekątną poprzez zamianę wierszy
+wewnątrz bloku.
+
+Informacja o wykonanych zamianach wierszy jest zapamiętywana w postaci permutacji
+i wykorzystywana podczas rozwiązywania układów trójkątnych oraz w etapie
+podstawienia wstecznego. Takie podejście pozwala uniknąć dzielenia przez bardzo
+małe liczby, ogranicza wpływ błędów zaokrągleń i znacząco poprawia dokładność
+wyników, zachowując jednocześnie blokową strukturę macierzy.
+
 
 \begin{algorithm}
-\caption{Eliminacja Gaussa z częściowym wyborem elementu głównego}
+\caption{Eliminacja Gaussa dla macierzy blokowej z częściowym wyborem elementu głównego}
 \begin{algorithmic}[1]
-\Procedure{SolveGaussPivot}{$n, l, A, b$}
-    \State $p \gets [1, 2, \dots, n]$ \Comment{Inicjalizacja wektora permutacji}
-    
-    \For{$k \gets 1$ \textbf{ to } $n-1$}
-        \State $max\_val \gets 0.0$
-        \State $pivot\_row \gets k$
+\Procedure{SolveBlockGaussPivot}{$v, l, A, B, C, b$}
+    \State $x \gets \text{copy}(b)$
+    \State $As \gets \text{deepcopy}(A)$
+    \State $P \gets \text{array of permutations}$
+
+    \State \Comment{ETAP 1: Eliminacja w przód}
+    \For{$k \gets 1$ \textbf{ to } $v$}
+        \State $(As_k, P_k) \gets \text{LU\_Dense\_Pivot}(As_k)$
         
-        \Comment{Wybór elementu głównego w obrębie pasma $l$}
-        \For{$i \gets k$ \textbf{ to } $\min(k + l, n)$}
-            \If{$|A_{p_i, k}| > max\_val$}
-                \State $max\_val \gets |A_{p_i, k}|$
-                \State $pivot\_row \gets i$
-            \EndIf
-        \EndFor
+        \State $r_k \gets (k-1)l+1 : kl$
+        \State \text{Solve\_L}$(As_k, x_{r_k}, P_k)$
         
-        \State $\text{swap}(p_k, p_{pivot\_row})$ \Comment{Zamiana wierszy w wektorze permutacji}
-        
-        \For{$i \gets k+1$ \textbf{ to } $\min(k + l, n)$}
-            \State $factor \gets A_{p_i, k} / A_{p_k, k}$
-            \State $A_{p_i, k} \gets 0.0$
+        \If{$k < v$}
+            \State $W \gets \text{Compute\_W}(As_k, C_k, P_k)$
+            \State \text{UpdateBlock}$(As_{k+1}, B_k, W)$
             
-            \Comment{Aktualizacja wiersza - pasmo może wzrosnąć do $2l$}
-            \For{$j \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
-                \State $A_{p_i, j} \gets A_{p_i, j} - factor \cdot A_{p_k, j}$
-            \EndFor
-            \State $b_{p_i} \gets b_{p_i} - factor \cdot b_{p_k}$
-        \EndFor
+            \State $z \gets \text{copy}(x_{r_k})$
+            \State \text{Solve\_U}$(As_k, z)$
+            
+            \State $r_n \gets kl+1 : (k+1)l$
+            \State \text{UpdateRHS}$(x_{r_n}, B_k, z)$
+        \EndIf
     \EndFor
 
-    \State $x \gets \text{nowy wektor rozmiaru } n$
-    \Comment{Podstawienie wsteczne z uwzględnieniem permutacji i pasma $2l$}
-    \For{$i \gets n$ \textbf{ down to } $1$}
-        \State $sum\_val \gets 0.0$
-        \For{$j \gets i+1$ \textbf{ to } $\min(i + 2l, n)$}
-            \State $sum\_val \gets sum\_val + A_{p_i, j} \cdot x_j$
-        \EndFor
-        \State $x_i \gets (b_{p_i} - sum\_val) / A_{p_i, i}$
+    \State \Comment{ETAP 2: Podstawienie wsteczne}
+    \State \text{Solve\_U}$(As_v, x_{(v-1)l+1 : vl})$
+
+    \For{$k \gets v-1$ \textbf{ down to } $1$}
+        \State $r_k \gets (k-1)l+1 : kl$
+        \State $r_n \gets kl+1 : (k+1)l$
+        
+        \State $corr \gets C_k \cdot x_{r_n}$
+        \State $corr \gets \text{permute}(corr, P_k)$
+        
+        \State \text{Solve\_L}$(As_k, corr)$
+        \State $x_{r_k} \gets x_{r_k} - corr$
+        \State \text{Solve\_U}$(As_k, x_{r_k})$
     \EndFor
-    
+
     \State \Return $x$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
+
 \newpage
-\begin{figure}[H] 
-    
-    \centering 
-
-    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/time1.png}
-
-    \label{fig:wykres-desmos}
-    
-\end{figure}
 
 \begin{figure}[H] 
     
     \centering 
 
-    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/err1.png}
+    \includegraphics[width=1.0\textwidth, keepaspectratio]{../charts/err1.png}
 
     \label{fig:wykres-desmos}
     
 \end{figure}
 
 \subsection*{Wnioski}
-Analiza wykresu czasu wykonania, widzimy, że oba warianty algorytmu eliminacji Gaussa wykazują liniową złożoność czasową względem rozmiaru macierzy n.
-Metoda eliminacji Gaussa z częściowym wyborem elementu głównego jest nieco wolniejsza względem dodatkowych operacji związanych z wyborem elementu głównego i zamianą wierszy.
-Wykres ukazujący błędy względne pokazuje, że metoda z wyborem elementu głównego jest znacznie bardziej stabilna numerycznie - wynika to z faktu, że unika dzielenia przez bardzo małe liczby, co minimalizuje błędy zaokrągleń.
-Podczas analizy macierzy gorzej uwarunkowanych, metoda bez wyboru elementu głównego wykazuje znacznie większe błędy, co potwierdza jej podatność na niestabilność numeryczną.
+Analiza błędów względnych pokazuje, że metoda eliminacji Gaussa z częściowym wyborem elementu głównego jest znacznie bardziej stabilna numerycznie. 
+Dzieje się tak, ponieważ w każdym kroku wybierany jest największy element w kolumnie bloku, co minimalizuje ryzyko dzielenia przez bardzo małe liczby i ogranicza błędy zaokrągleń.  
+Natomiast metoda bez wyboru elementu głównego wykazuje większe błędy przy rozwiązywaniu układów macierzy gorzej uwarunkowanych, co potwierdza jej podatność na niestabilność numeryczną.
+
 \newpage
 
 \section*{Zadanie 2}
@@ -213,97 +229,88 @@ macierzy $A$, która jest macierzą rzadką (taka sama jak w zadaniu 1), dla dw�
 \end{itemize}
 
 \subsection*{Analiza złożoności obliczeniowej}
-\subsubsection*{Bez wyboru elementu głównego}
-Pętla zewnętrzna przebiega n-1 razy, pętle wierszy i kolumn są ograniczone zakresem $min(k + l ,n)$, co skutkuje złożonością maksymalnie l dla każdej z nich.
-Koszt operacji dostępu do słownika (get, set) jest stały $O(1)$, więc całkowita złożoność czasowa algorytmu wynosi $O(n \cdot l^2)$.
-Dla małych, stałych wartości l, złożoność ta upraszcza się do liniowej O(n). Złożoność pamięciowa wynosi $O(n \cdot l)$ ze względu na przechowywanie
-niezerowych elementów macierzy w strukturze słownika.
+\subsubsection*{LU bez wyboru elementu głównego}
+Pętla zewnętrzna algorytmu przebiega po wszystkich blokach diagonalnych \(k = 1, \dots, v\), gdzie \(v = n / l\). 
+W każdym bloku wykonywany jest rozkład LU o złożoności \(O(l^3)\) dla bloku diagonalnego \(A_k\).  
 
-\subsubsection*{Z częściowym wyborem elementu głównego}
-W tym wariancie pętla zewnętrzna również wykonuje się n-1 razy. Dodatkowym kosztem w każdym kroku jest wyszukiwanie elementu głównego w obrębie pasma l,
-co dodaje kolejną pętlę o złożoności O(l). Kluczową różnicą jest rozszerzenie pasma macierzy do 2l podczas aktualizacji wierszy po zamianie.
-W rezultacie złożoność czasowa tego wariantu wynosi $O(n \cdot l^2)$, podobnie jak w poprzednim przypadku, ale z większymi stałymi ukrytymi w notacji O.
-Złożoność pamięciowa pozostaje $O(n \cdot l)$, ponieważ nadal przechowujemy tylko niezerowe elementy macierzy.
+Dodatkowo, dla każdego bloku aktualizowany jest następny blok diagonalny przy użyciu macierzy granicznej \(B_k\) i macierzy \(W\), 
+co wymaga około \(O(l^2)\) operacji na blok. Suma wszystkich operacji dla wszystkich bloków daje całkowitą złożoność czasową:
+\[
+O(v \cdot l^3) = O\Big(\frac{n}{l} \cdot l^3\Big) = O(n \cdot l^2).
+\]
+
+Dla małych, stałych wartości \(l\), złożoność upraszcza się do \(O(n)\), co oznacza praktycznie liniowy czas działania względem rozmiaru macierzy \(n\).  
+
+Złożoność pamięciowa wynosi \(O(v \cdot l^2) = O(n \cdot l)\), ponieważ przechowywane są jedynie bloki diagonalne \(A_k\), macierze graniczne \(B_k\) oraz przekątne \(C_k\), 
+a nie pełna macierz.
+
+
+\subsubsection*{Blokowa LU z częściowym wyborem elementu głównego}
+W tym wariancie, dla każdego bloku diagonalnego, wybierany jest element
+o największej wartości bezwzględnej w kolumnach bloku i zamieniany na
+przekątną poprzez permutację wierszy wewnątrz bloku.  
+Dzięki temu unikamy dzielenia przez bardzo małe liczby i poprawiamy stabilność
+numeryczną.
+
+Koszt dodatkowy polega na wyszukaniu elementu głównego w obrębie każdego
+bloku oraz zastosowaniu permutacji podczas rozwiązywania układu. Operacje
+na blokach są ograniczone do sąsiednich bloków diagonalnych, więc złożoność
+czasowa pozostaje w przybliżeniu \(O(v \cdot l^3) \sim O(n \cdot l^2)\),
+choć z większymi stałymi ukrytymi w notacji O w porównaniu do wariantu bez
+pivotowania.  
+Złożoność pamięciowa pozostaje \(O(v \cdot l^2) \sim O(n \cdot l)\), ponieważ
+przechowujemy wyłącznie bloki diagonalne i graniczne, a nie pełną macierz.
 
 \subsection*{Implementacja}
-\begin{algorithm}
-\caption{Dekompozycja LU macierzy pasmowej (bez wyboru elementu głównego)}
+\begin{algorithm}[H]
+\caption{Blokowa dekompozycja LU bez wyboru elementu głównego}
 \begin{algorithmic}[1]
-\Procedure{LUDecomposition}{$n, l, A$}
-    \For{$k \gets 1$ \textbf{ to } $n-1$}
-        \For{$i \gets k+1$ \textbf{ to } $\min(k + l, n)$}
-            \State $factor \gets A_{i, k} / A_{k, k}$
-            \State $A_{i, k} \gets factor$ \Comment{Zapisanie mnożnika macierzy $L$ w miejscu zera}
+\Procedure{BlockLU}{$v, l, A, B, C$}
+    \For{$k \gets 1$ \textbf{ to } $v$}
+        \State \Comment{Rozkład LU bloku diagonalnego}
+        \State $\text{LU\_Dense}(A_k)$
+        
+        \If{$k < v$}
+            \State \Comment{Obliczenie macierzy pomocniczej}
+            \State $W \gets \text{Compute\_W}(A_k, C_k)$
             
-            \For{$j \gets k+1$ \textbf{ to } $\min(k + l, n)$}
-                \State $val \gets A_{i, j} - factor \cdot A_{k, j}$
-                \If{$val \neq 0.0$}
-                    \State $A_{i, j} \gets val$ \Comment{Aktualizacja elementu macierzy $U$}
-                \Else
-                    \State \text{usuń } $A_{i, j}$ \Comment{Zarządzanie rzadkością słownika}
-                \EndIf
-            \EndFor
-        \EndFor
+            \State \Comment{Aktualizacja następnego bloku diagonalnego}
+            \State $A_{k+1} \gets A_{k+1} - B_k \cdot W$
+        \EndIf
     \EndFor
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
-\caption{Dekompozycja LU macierzy pasmowej z częściowym wyborem elementu głównego}
+
+\begin{algorithm} [H]
+\caption{Blokowa dekompozycja LU z częściowym wyborem elementu głównego}
 \begin{algorithmic}[1]
-\Procedure{LUDecompositionPivot}{$n, l, A$}
-    \State $p \gets [1, 2, \dots, n]$ \Comment{Inicjalizacja wektora permutacji}
-    
-    \For{$k \gets 1$ \textbf{ to } $n-1$}
-        \State $max\_val \gets 0.0$
-        \State $pivot\_idx \gets k$
+\Procedure{BlockLU\_Pivot}{$v, l, A, B, C$}
+    \State perms $\gets$ pusty wektor długości $v$ \Comment{Przechowuje permutacje dla każdego bloku}
+    \For{$k \gets 1$ \textbf{ to } $v$}
+        \State \Comment{Rozkład LU bloku diagonalnego z częściowym wyborem elementu głównego}
+        \State perms[$k$] $\gets$ LU\_Dense\_Pivot($A_k$) \Comment{Zamiana wierszy w bloku i zapis permutacji}
         
-        \Comment{Poszukiwanie pivota w kolumnie $k$ (zakres $l$)}
-        \For{$i \gets k$ \textbf{ to } $\min(k + l, n)$}
-            \If{$|A_{p_i, k}| > max\_val$}
-                \State $max\_val \gets |A_{p_i, k}|$
-                \State $pivot\_idx \gets i$
-            \EndIf
-        \EndFor
-        
-        \State $\text{swap}(p_k, p_{pivot\_idx})$ \Comment{Zamiana wierszy w wektorze permutacji}
-        
-        \For{$i \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
-            \State $factor \gets A_{p_i, k} / A_{p_k, k}$
-            \State $A_{p_i, k} \gets factor$
+        \If{$k < v$}
+            \State \Comment{Obliczenie macierzy pomocniczej z uwzględnieniem permutacji}
+            \State $W \gets$ Compute\_W($A_k$, $C_k$, perms[$k$])
             
-            \For{$j \gets k+1$ \textbf{ to } $\min(k + 2l, n)$}
-                \State $val \gets A_{p_i, j} - factor \cdot A_{p_k, j}$
-                \If{$val \neq 0.0$}
-                    \State $A_{p_i, j} \gets val$
-                \Else
-                    \State \text{usuń } $A_{p_i, j}$
-                \EndIf
-            \EndFor
-        \EndFor
+            \State \Comment{Aktualizacja następnego bloku diagonalnego}
+            \State $A_{k+1} \gets A_{k+1} - B_k \cdot W$
+        \EndIf
     \EndFor
-    
-    \State \Return $p$
+    \State \Return perms \Comment{Permutacje są potrzebne przy rozwiązywaniu układu}
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[H] 
-    
-    \centering 
-
-    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/time2.png}
-
-    \label{fig:wykres-desmos}
-    
-\end{figure}
 
 \begin{figure}[H] 
     
     \centering 
 
-    \includegraphics[width=0.7\textwidth, keepaspectratio]{../charts/err2.png}
+    \includegraphics[width=1.0\textwidth, keepaspectratio]{../charts/err2.png}
 
     \label{fig:wykres-desmos}
     
@@ -318,50 +325,88 @@ Oba warianty algorytmu LU wykazują liniową złożoność czasową $O(n)$ wzgl�
 Celem zadania jest napsianie funkcji rozwiązujących układ równań $Ax = b$ wykorzystując rozkład $LU$ z zadania 2, uwzględniając specyficzną postać macierzy $A$, która jest macierzą rzadką (taka sama jak w zadaniu 1).
 
 \subsection*{Złożoność obliczeniowa}
-\subsubsection*{Podstawienie wprzód}
-Pętla zewnętrzna wykonuje się n razy, pętla wewnętrzna ykonuje się maksymalnie 2l razy, 
-zatem złożoność obliczeniowa podstawienia wprzód wynosi $O(n \cdot l)$.
+\subsubsection*{Podstawienie w przód}
+Pętla zewnętrzna przebiega po wszystkich blokach diagonalnych $k = 1, \dots, v$, a każdy blok ma rozmiar $l$. 
+Dla każdego bloku wykonywane jest podstawianie w przód w lokalnym układzie trójkątnym L oraz korekta wartości w następnym bloku z użyciem macierzy granicznej B. 
+Łącznie operacje dla każdego bloku są ograniczone do $O(l^2)$, co dla wszystkich bloków daje złożoność czasową $O(v \cdot l^2) = O(n \cdot l)$ dla stałego, małego $l$.
 
 \subsubsection*{Podstawienie wstecz}
-Pętla zewnętrzna wykonuje się n razy, pętla wewnętrzna wykonuje się maksymalnie 2l razy, 
-zatem złożoność obliczeniowa podstawienia wstecz wynosi $O(n \cdot l)$.
+Analogicznie, podstawianie wsteczne po blokach wykorzystuje macierze U i korekty wynikające z bloków C. 
+Każdy blok wymaga $O(l^2)$ operacji, więc całkowita złożoność dla wszystkich bloków wynosi $O(v \cdot l^2) = O(n \cdot l)$, przy czym pamięć jest zużywana wyłącznie na bloki diagonalne, graniczne i przekątne.
 
-\newpage
 \subsection*{Idea metody i implementacja}
-Ideą metody jest wykorzystanie obliczonego wcześniej rozkładu macierzy na czynniki trójkątne (L i U) do zamiany problemu
-$Ax = b$ na dwa proste układy trójkątne. Dzięki strukturze pasmowej, w każdym kroku sumujemy tylko 2l sąsiednich elementów, 
-co eliminuje konieczność operowania na całej macierzy.
+Metoda wykorzystuje wcześniej obliczony blokowy rozkład LU z ewentualnym częściowym wyborem elementu głównego w każdym bloku. 
+Rozwiązywanie układu $Ax = b$ sprowadza się do dwóch etapów: podstawiania w przód $Ly = Pb$ oraz podstawiania wstecz $Ux = y$. 
+Dzięki strukturze blokowej w każdym kroku operujemy wyłącznie na elementach w bieżącym i sąsiednim bloku, co ogranicza liczbę operacji do $O(l^2)$ na blok i eliminuje konieczność przetwarzania całej macierzy. 
+Permutacje $p_k$ w blokach diagonalnych zapewniają stabilność numeryczną, a macierze B i C odpowiadają za wpływ sąsiednich bloków na wynik.
+
 
 \begin{algorithm}
-\caption{Rozwiązywanie układu LU dla macierzy pasmowej}
+\caption{Rozwiązywanie układu LU dla macierzy blokowej (Zadanie 3)}
 \begin{algorithmic}[1]
-\Procedure{SolveLU}{$n, l, A, b, p$}
-    \State $B \gets (p = \text{null}) ? l : 2l$ \Comment{Ustalenie szerokości pasma}
-    \State $y \gets \text{nowy wektor rozmiaru } n$
+\Procedure{SolveLUBlock}{$v, l, A, B, C, b, p$}
+    \State $x \gets \text{copy}(b)$
     
-    \Comment{1. Podstawianie w przód: $Ly = Pb$}
-    \For{$i \gets 1$ \textbf{ to } $n$}
-        \State $idx \gets (p = \text{null}) ? i : p_i$
-        \State $sum \gets 0.0$
-        \For{$j \gets \max(1, i - B)$ \textbf{ to } $i - 1$}
-            \State $sum \gets sum + A_{idx, j} \cdot y_j$
-        \EndFor
-        \State $y_i \gets b_{idx} - sum$
+    \State \Comment{ETAP 1: Podstawienie w przód ($Ly = Pb$)}
+    \For{$k \gets 1$ \textbf{ to } $v$}
+        \State $r\_curr \gets (k-1) \cdot l + 1 : k \cdot l$
+        
+        \If{$k > 1$}
+            \State $r\_prev \gets (k-2) \cdot l + 1 : (k-1) \cdot l$
+            \State $z \gets \text{copy}(x_{r\_prev})$
+            \State \text{Solve\_U}($A_{k-1}, z$) \Comment{Wykorzystanie $U$ z poprzedniego bloku}
+            
+            \State $x_{r\_curr[1]} \gets x_{r\_curr[1]} - \text{dot}(B_{k-1}.\text{top\_row}, z)$
+            \For{$i \gets 2$ \textbf{ to } $l$}
+                \State $x_{r\_curr[i]} \gets x_{r\_curr[i]} - B_{k-1}.\text{right\_col}_{i-1} \cdot z_l$
+            \EndFor
+        \EndIf
+        
+        \State \text{Solve\_L}($A_k, x_{r\_curr}, p_k$) \Comment{Rozwiązanie lokalne z permutacją $p_k$}
     \EndFor
 
-    \State $x \gets \text{nowy wektor rozmiaru } n$
-    \Comment{2. Podstawianie wsteczne: $Ux = y$}
-    \For{$i \gets n$ \textbf{ down to } $1$}
-        \State $idx \gets (p = \text{null}) ? i : p_i$
-        \State $sum \gets 0.0$
-        \For{$j \gets i + 1$ \textbf{ to } $\min(i + B, n)$}
-            \State $sum \gets sum + A_{idx, j} \cdot x_j$
-        \EndFor
-        \State $x_i \gets (y_i - sum) / A_{idx, i}$
+    \State \Comment{ETAP 2: Podstawienie wsteczne ($Ux = y$)}
+    \State \text{Solve\_U}($A_v, x_{(v-1)l+1 : vl}$)
+    
+    \For{$k \gets v-1$ \textbf{ down to } $1$}
+        \State $r\_k \gets (k-1)l+1 : kl$
+        \State $r\_n \gets kl+1 : (k+1)l$
+        
+        \State $corr \gets C_k.\text{diag} \cdot x_{r\_n}$ \Comment{Mnożenie przez rzadki blok $C$}
+        \State \text{Solve\_L}($A_k, corr, p_k$)
+        \State $x_{r\_k} \gets x_{r\_k} - corr$
+        \State \text{Solve\_U}($A_k, x_{r\_k}$)
     \EndFor
     
     \State \Return $x$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+\section*{Wykresy czasu i pamięci}
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=1.0\textwidth, keepaspectratio]{../charts/time.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\begin{figure}[H] 
+    
+    \centering 
+
+    \includegraphics[width=1.0\textwidth, keepaspectratio]{../charts/memory.png}
+
+    \label{fig:wykres-desmos}
+    
+\end{figure}
+
+\subsection*{Wnioski}
+Analiza wykresów czasu i pamięci potwierdza liniową złożoność obu implementacji względem rozmiaru macierzy \(n\). 
+Metoda z częściowym wyborem elementu głównego jest wolniejsza ze względu na dodatkowe operacje związane z wyszukiwaniem pivota i permutacjami, jednak zapewnia wyższą stabilność numeryczną. 
+Wszystkie zaimplementowane warianty algorytmów wykazują identyczne, liniowe zużycie pamięci. Wynika to z zastosowania statycznej struktury 
+blokowej, która alokuje optymalną ilość miejsca dla wszystkich elementów mogących stać się niezerowymi.
 \end{document}
