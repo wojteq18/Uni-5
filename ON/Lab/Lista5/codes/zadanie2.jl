@@ -18,7 +18,7 @@ function lu_decomp_pivot!(n::Int, l::Int, A::Dict{Tuple{Int,Int}, Float64})
     for k in 1:n-1
         max_val = 0.0
         pivot_idx = k
-        for i in k:min(k + l, n)
+        for i in k:min(k + 2*l, n)
             if abs(get(A, (p[i], k), 0.0)) > max_val
                 max_val = abs(get(A, (p[i], k), 0.0))
                 pivot_idx = i
@@ -26,7 +26,7 @@ function lu_decomp_pivot!(n::Int, l::Int, A::Dict{Tuple{Int,Int}, Float64})
         end
         p[k], p[pivot_idx] = p[pivot_idx], p[k]
 
-        for i in k+1:min(k + l, n)
+        for i in k+1:min(k + 2*l, n)
             factor = get(A, (p[i], k), 0.0) / A[(p[k], k)]
             A[(p[i], k)] = factor
             for j in k+1:min(k + 2*l, n)
