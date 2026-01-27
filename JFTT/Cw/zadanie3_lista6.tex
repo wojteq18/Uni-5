@@ -1,0 +1,107 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[polish]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+
+\title{Języki Formalne i Techniki Translacji}
+\author{Wojciech Typer 279730}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Zadanie 3 lista 6}
+
+\subsection*{1. Eliminacja rekurencji lewostronnej}
+Oryginalna gramatyka posiada rekurencję lewostronną w produkcjach dla $E$ oraz $T$. Po zastosowaniu standardowego algorytmu eliminacji ($A \to A\alpha \mid \beta \implies A \to \beta A', A' \to \alpha A' \mid \epsilon$), otrzymujemy gramatykę $G'$:
+
+\begin{itemize}
+    \item $E \to T E'$
+    \item $E' \to \text{or } T E' \mid \epsilon$
+    \item $T \to F T'$
+    \item $T' \to \text{and } F T' \mid \epsilon$
+    \item $F \to \text{not } F \mid ( E ) \mid \text{true} \mid \text{false}$
+\end{itemize}
+
+\subsection*{2. Lewostronna faktoryzacja}
+Lewostronna faktoryzacja jest stosowana, gdy dla jednego nieterminala istnieją co najmniej dwie produkcje zaczynające się od tego samego symbolu. W gramatyce $G'$:
+\begin{itemize}
+    \item Produkcje dla $E, E', T, T'$ zaczynają się od unikalnych symboli (włączając $\epsilon$).
+    \item Produkcje dla $F$ zaczynają się odpowiednio od: \texttt{not}, \texttt{(}, \texttt{true}, \texttt{false}. 
+\end{itemize}
+Zatem \textbf{lewostronna faktoryzacja nie jest wymagana}, ponieważ nie isteieje wiele produkcji dla jednego nieterminala zaczynających się od tego samego symbolu.
+
+\subsection*{3. Zbiory FIRST i FOLLOW}
+Wyznaczone zbiory dla przekształconej gramatyki (gdzie $\epsilon$ oznacza słowo puste, a \$ koniec ciągu):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Symbol} & \textbf{FIRST} & \textbf{FOLLOW} \\ \midrule
+$E$  & \{ \texttt{not, (, true, false} \} & \{ \texttt{\$, )} \} \\
+$E'$ & \{ \texttt{or}, $\epsilon$ \}         & \{ \texttt{\$, )} \} \\
+$T$  & \{ \texttt{not, (, true, false} \} & \{ \texttt{or, \$, )} \} \\
+$T'$ & \{ \texttt{and}, $\epsilon$ \}        & \{ \texttt{or, \$, )} \} \\
+$F$  & \{ \texttt{not, (, true, false} \} & \{ \texttt{and, or, \$, )} \} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection*{4. Czy gramatyka jest LL(1)?}
+Tak, otrzymana gramatyka \textbf{jest typu LL(1)}. Dla każdej produkcji $A \to \alpha \mid \beta$:
+\begin{enumerate}
+    \item $FIRST(\alpha) \cap FIRST(\beta) = \emptyset$.
+    \item $FIRST(\alpha) \cap FOLLOW(A) = \emptyset$.
+\end{enumerate}
+
+\begin{itemize}
+    \item \textbf{Nieterminal $E'$ ($E' \to \text{or } T E' \mid \varepsilon$):} \\
+    $\alpha = \text{or } T E' \implies FIRST(\alpha) = \{\text{or}\}$ \\
+    $\beta = \varepsilon \implies FIRST(\beta) = \{\varepsilon\}$ \\
+    $FOLLOW(E') = \{\$, )\}$ \\
+    $\{\text{or}\} \cap \{\$, )\} = \emptyset$. Warunek spełniony.
+
+    \item \textbf{Nieterminal $T'$ ($T' \to \text{and } F T' \mid \varepsilon$):} \\
+    $\alpha = \text{and } F T' \implies FIRST(\alpha) = \{\text{and}\}$ \\
+    $\beta = \varepsilon \implies FIRST(\beta) = \{\varepsilon\}$ \\
+    $FOLLOW(T') = \{\text{or}, \$, )\}$ \\
+    $\{\text{and}\} \cap \{\text{or}, \$, )\} = \emptyset$. Warunek spełniony.
+
+    \item \textbf{Nieterminal $F$ ($F \to \text{not } F \mid (E) \mid \text{true} \mid \text{false}$):} \\
+    Wszystkie alternatywy zaczynają się od unikalnych terminali: $\{\text{not}\}, \{(\}, \{\text{true}\}, \{\text{false}\}$, więc ich zbiory $FIRST$ są rozłączne.
+\end{itemize}
+
+Te warunki są spełnione, co oznacza, że nasza gramatyka jest LL(1)
+
+\subsection*{5. Tablica parsera przewidującego}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+ & \textbf{or} & \textbf{and} & \textbf{not} & \textbf{(} & \textbf{)} & \textbf{true} & \textbf{false} & \textbf{\$} \\ \hline
+\textbf{E} & & & $E \to T E'$ & $E \to T E'$ & & $E \to T E'$ & $E \to T E'$ & \\ \hline
+\textbf{E'} & $E' \to \text{or } T E'$ & & & & $E' \to \epsilon$ & & & $E' \to \epsilon$ \\ \hline
+\textbf{T} & & & $T \to F T'$ & $T \to F T'$ & & $T \to F T'$ & $T \to F T'$ & \\ \hline
+\textbf{T'} & $T' \to \epsilon$ & $T' \to \text{and } F T'$ & & & $T' \to \epsilon$ & & & $T' \to \epsilon$ \\ \hline
+\textbf{F} & & & $F \to \text{not } F$ & $F \to (E)$ & & $F \to \text{true}$ & $F \to \text{false}$ & \\ \hline
+\end{tabular}
+\end{table}
+
+\end{document}
